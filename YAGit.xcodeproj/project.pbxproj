@@ -1,0 +1,549 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 110;
+	objects = {
+
+/* Begin PBXContainerItemProxy section */
+		93E8FE393059F41D000EDE50 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 93E8FE213059F41C000EDE50 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 93E8FE283059F41C000EDE50;
+			remoteInfo = YAGit;
+		};
+		93E8FE433059F41D000EDE50 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 93E8FE213059F41C000EDE50 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 93E8FE283059F41C000EDE50;
+			remoteInfo = YAGit;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		93E8FE293059F41C000EDE50 /* YAGit.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YAGit.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		93E8FE383059F41D000EDE50 /* YAGitTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = YAGitTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		93E8FE423059F41D000EDE50 /* YAGitUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = YAGitUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedRootGroup section */
+		93E8FE2B3059F41C000EDE50 /* YAGit */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = YAGit;
+			sourceTree = "<group>";
+		};
+		93E8FE3B3059F41D000EDE50 /* YAGitTests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = YAGitTests;
+			sourceTree = "<group>";
+		};
+		93E8FE453059F41D000EDE50 /* YAGitUITests */ = {
+			isa = PBXFileSystemSynchronizedRootGroup;
+			path = YAGitUITests;
+			sourceTree = "<group>";
+		};
+/* End PBXFileSystemSynchronizedRootGroup section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		93E8FE263059F41C000EDE50 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
+		93E8FE353059F41D000EDE50 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
+		93E8FE3F3059F41D000EDE50 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			files = (
+			);
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		93E8FE203059F41C000EDE50 = {
+			isa = PBXGroup;
+			children = (
+				93E8FE2B3059F41C000EDE50 /* YAGit */,
+				93E8FE3B3059F41D000EDE50 /* YAGitTests */,
+				93E8FE453059F41D000EDE50 /* YAGitUITests */,
+				93E8FE2A3059F41C000EDE50 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		93E8FE2A3059F41C000EDE50 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				93E8FE293059F41C000EDE50 /* YAGit.app */,
+				93E8FE383059F41D000EDE50 /* YAGitTests.xctest */,
+				93E8FE423059F41D000EDE50 /* YAGitUITests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		93E8FE283059F41C000EDE50 /* YAGit */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 93E8FE4A3059F41D000EDE50 /* Build configuration list for PBXNativeTarget "YAGit" */;
+			buildPhases = (
+				93E8FE253059F41C000EDE50 /* Sources */,
+				93E8FE263059F41C000EDE50 /* Frameworks */,
+				93E8FE273059F41C000EDE50 /* Resources */,
+			);
+			buildRules = (
+			);
+			fileSystemSynchronizedGroups = (
+				93E8FE2B3059F41C000EDE50 /* YAGit */,
+			);
+			name = YAGit;
+			productName = YAGit;
+			productReference = 93E8FE293059F41C000EDE50 /* YAGit.app */;
+			productType = "com.apple.product-type.application";
+		};
+		93E8FE373059F41D000EDE50 /* YAGitTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 93E8FE4D3059F41D000EDE50 /* Build configuration list for PBXNativeTarget "YAGitTests" */;
+			buildPhases = (
+				93E8FE343059F41D000EDE50 /* Sources */,
+				93E8FE353059F41D000EDE50 /* Frameworks */,
+				93E8FE363059F41D000EDE50 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				93E8FE3A3059F41D000EDE50 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				93E8FE3B3059F41D000EDE50 /* YAGitTests */,
+			);
+			name = YAGitTests;
+			productName = YAGitTests;
+			productReference = 93E8FE383059F41D000EDE50 /* YAGitTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
+		93E8FE413059F41D000EDE50 /* YAGitUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 93E8FE503059F41D000EDE50 /* Build configuration list for PBXNativeTarget "YAGitUITests" */;
+			buildPhases = (
+				93E8FE3E3059F41D000EDE50 /* Sources */,
+				93E8FE3F3059F41D000EDE50 /* Frameworks */,
+				93E8FE403059F41D000EDE50 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				93E8FE443059F41D000EDE50 /* PBXTargetDependency */,
+			);
+			fileSystemSynchronizedGroups = (
+				93E8FE453059F41D000EDE50 /* YAGitUITests */,
+			);
+			name = YAGitUITests;
+			productName = YAGitUITests;
+			productReference = 93E8FE423059F41D000EDE50 /* YAGitUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		93E8FE213059F41C000EDE50 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 2700;
+				LastUpgradeCheck = 2700;
+				TargetAttributes = {
+					93E8FE283059F41C000EDE50 = {
+						CreatedOnToolsVersion = 27.0;
+					};
+					93E8FE373059F41D000EDE50 = {
+						CreatedOnToolsVersion = 27.0;
+						TestTargetID = 93E8FE283059F41C000EDE50;
+					};
+					93E8FE413059F41D000EDE50 = {
+						CreatedOnToolsVersion = 27.0;
+						TestTargetID = 93E8FE283059F41C000EDE50;
+					};
+				};
+			};
+			buildConfigurationList = 93E8FE243059F41C000EDE50 /* Build configuration list for PBXProject "YAGit" */;
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 93E8FE203059F41C000EDE50;
+			minimizedProjectReferenceProxies = 1;
+			preferredProjectObjectVersion = 77;
+			productRefGroup = 93E8FE2A3059F41C000EDE50 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				93E8FE283059F41C000EDE50 /* YAGit */,
+				93E8FE373059F41D000EDE50 /* YAGitTests */,
+				93E8FE413059F41D000EDE50 /* YAGitUITests */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		93E8FE273059F41C000EDE50 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+		93E8FE363059F41D000EDE50 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+		93E8FE403059F41D000EDE50 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			files = (
+			);
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		93E8FE253059F41C000EDE50 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
+		93E8FE343059F41D000EDE50 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
+		93E8FE3E3059F41D000EDE50 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			files = (
+			);
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		93E8FE3A3059F41D000EDE50 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 93E8FE283059F41C000EDE50 /* YAGit */;
+			targetProxy = 93E8FE393059F41D000EDE50 /* PBXContainerItemProxy */;
+		};
+		93E8FE443059F41D000EDE50 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 93E8FE283059F41C000EDE50 /* YAGit */;
+			targetProxy = 93E8FE433059F41D000EDE50 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		93E8FE483059F41D000EDE50 /* Debug configuration for PBXProject "YAGit" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				DEVELOPMENT_TEAM = Q6W7LYC48G;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 27.0;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		93E8FE493059F41D000EDE50 /* Release configuration for PBXProject "YAGit" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				DEVELOPMENT_TEAM = Q6W7LYC48G;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MACOSX_DEPLOYMENT_TARGET = 27.0;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = macosx;
+				SWIFT_COMPILATION_MODE = wholemodule;
+			};
+			name = Release;
+		};
+		93E8FE4B3059F41D000EDE50 /* Debug configuration for PBXNativeTarget "YAGit" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Q6W7LYC48G;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.structlab.YAGit;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Debug;
+		};
+		93E8FE4C3059F41D000EDE50 /* Release configuration for PBXNativeTarget "YAGit" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Q6W7LYC48G;
+				ENABLE_APP_SANDBOX = YES;
+				ENABLE_HARDENED_RUNTIME = YES;
+				ENABLE_PREVIEWS = YES;
+				ENABLE_USER_SELECTED_FILES = readonly;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.structlab.YAGit;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				REGISTER_APP_GROUPS = YES;
+				STRING_CATALOG_GENERATE_SYMBOLS = YES;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_DEFAULT_ACTOR_ISOLATION = MainActor;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+			};
+			name = Release;
+		};
+		93E8FE4E3059F41D000EDE50 /* Debug configuration for PBXNativeTarget "YAGitTests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Q6W7LYC48G;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 27.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.structlab.YAGitTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/YAGit.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/YAGit";
+			};
+			name = Debug;
+		};
+		93E8FE4F3059F41D000EDE50 /* Release configuration for PBXNativeTarget "YAGitTests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Q6W7LYC48G;
+				GENERATE_INFOPLIST_FILE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 27.0;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.structlab.YAGitTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/YAGit.app/$(BUNDLE_EXECUTABLE_FOLDER_PATH)/YAGit";
+			};
+			name = Release;
+		};
+		93E8FE513059F41D000EDE50 /* Debug configuration for PBXNativeTarget "YAGitUITests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Q6W7LYC48G;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.structlab.YAGitUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = YAGit;
+			};
+			name = Debug;
+		};
+		93E8FE523059F41D000EDE50 /* Release configuration for PBXNativeTarget "YAGitUITests" */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = Q6W7LYC48G;
+				GENERATE_INFOPLIST_FILE = YES;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.structlab.YAGitUITests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				STRING_CATALOG_GENERATE_SYMBOLS = NO;
+				SWIFT_APPROACHABLE_CONCURRENCY = YES;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_UPCOMING_FEATURE_MEMBER_IMPORT_VISIBILITY = YES;
+				SWIFT_VERSION = 5.0;
+				TEST_TARGET_NAME = YAGit;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		93E8FE243059F41C000EDE50 /* Build configuration list for PBXProject "YAGit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				93E8FE483059F41D000EDE50 /* Debug configuration for PBXProject "YAGit" */,
+				93E8FE493059F41D000EDE50 /* Release configuration for PBXProject "YAGit" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		93E8FE4A3059F41D000EDE50 /* Build configuration list for PBXNativeTarget "YAGit" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				93E8FE4B3059F41D000EDE50 /* Debug configuration for PBXNativeTarget "YAGit" */,
+				93E8FE4C3059F41D000EDE50 /* Release configuration for PBXNativeTarget "YAGit" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		93E8FE4D3059F41D000EDE50 /* Build configuration list for PBXNativeTarget "YAGitTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				93E8FE4E3059F41D000EDE50 /* Debug configuration for PBXNativeTarget "YAGitTests" */,
+				93E8FE4F3059F41D000EDE50 /* Release configuration for PBXNativeTarget "YAGitTests" */,
+			);
+			defaultConfigurationName = Release;
+		};
+		93E8FE503059F41D000EDE50 /* Build configuration list for PBXNativeTarget "YAGitUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				93E8FE513059F41D000EDE50 /* Debug configuration for PBXNativeTarget "YAGitUITests" */,
+				93E8FE523059F41D000EDE50 /* Release configuration for PBXNativeTarget "YAGitUITests" */,
+			);
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 93E8FE213059F41C000EDE50 /* Project object */;
+	validationLevel = 1;
+}
