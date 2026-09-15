@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		93E8FE553059F469000EDE50 /* SwiftGitX in Frameworks */ = {isa = PBXBuildFile; productRef = 93E8FE543059F469000EDE50 /* SwiftGitX */; };
+		93E8FE613059F500000EDE50 /* GitCore in Frameworks */ = {isa = PBXBuildFile; productRef = 93E8FE603059F500000EDE50 /* GitCore */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -56,6 +57,7 @@
 			isa = PBXFrameworksBuildPhase;
 			files = (
 				93E8FE553059F469000EDE50 /* SwiftGitX in Frameworks */,
+				93E8FE613059F500000EDE50 /* GitCore in Frameworks */,
 			);
 		};
 		93E8FE353059F41D000EDE50 /* Frameworks */ = {
@@ -110,6 +112,7 @@
 			name = YAGit;
 			packageProductDependencies = (
 				93E8FE543059F469000EDE50 /* SwiftGitX */,
+				93E8FE603059F500000EDE50 /* GitCore */,
 			);
 			productName = YAGit;
 			productReference = 93E8FE293059F41C000EDE50 /* YAGit.app */;
@@ -191,6 +194,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				93E8FE533059F469000EDE50 /* XCRemoteSwiftPackageReference "SwiftGitX" */,
+				93E8FE623059F500000EDE50 /* XCLocalSwiftPackageReference "GitCore" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 93E8FE2A3059F41C000EDE50 /* Products */;
@@ -383,10 +387,9 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Q6W7LYC48G;
-				ENABLE_APP_SANDBOX = YES;
+				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
-				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -415,10 +418,9 @@
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = Q6W7LYC48G;
-				ENABLE_APP_SANDBOX = YES;
+				ENABLE_APP_SANDBOX = NO;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
-				ENABLE_USER_SELECTED_FILES = readonly;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -555,6 +557,13 @@
 		};
 /* End XCConfigurationList section */
 
+/* Begin XCLocalSwiftPackageReference section */
+		93E8FE623059F500000EDE50 /* XCLocalSwiftPackageReference "GitCore" */ = {
+			isa = XCLocalSwiftPackageReference;
+			relativePath = GitCore;
+		};
+/* End XCLocalSwiftPackageReference section */
+
 /* Begin XCRemoteSwiftPackageReference section */
 		93E8FE533059F469000EDE50 /* XCRemoteSwiftPackageReference "SwiftGitX" */ = {
 			isa = XCRemoteSwiftPackageReference;
@@ -571,6 +580,10 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 93E8FE533059F469000EDE50 /* XCRemoteSwiftPackageReference "SwiftGitX" */;
 			productName = SwiftGitX;
+		};
+		93E8FE603059F500000EDE50 /* GitCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			productName = GitCore;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
