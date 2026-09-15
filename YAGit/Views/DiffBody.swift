@@ -54,6 +54,13 @@ enum DiffMetrics {
     }
 }
 
+/// Identity of a diff row. Every hunk's rows share one LazyVStack, so a per-hunk offset alone
+/// would repeat across hunks and SwiftUI would leave the later hunks' rows blank.
+struct DiffRowID: Hashable {
+    let hunk: Int
+    let row: Int
+}
+
 struct HunkHeaderRow: View {
     let hunk: DiffHunk
     let action: DiffBody.HunkAction?
@@ -80,6 +87,16 @@ struct HunkHeaderRow: View {
 
 // MARK: - Unified
 
+/// One row of the unified view.
+struct UnifiedRow: Identifiable {
+    let id: DiffRowID
+    let line: DiffLine
+}
+
+func unifiedRows(for hunk: DiffHunk) -> [UnifiedRow] {
+    hunk.lines.enumerated().map { UnifiedRow(id: DiffRowID(hunk: hunk.index, row: $0.offset), line: $0.element) }
+}
+
 private struct UnifiedDiffView: View {
     let diff: FileDiff
     let hunkAction: DiffBody.HunkAction?
@@ -95,8 +112,8 @@ private struct UnifiedDiffView: View {
                 LazyVStack(alignment: .leading, spacing: 0, pinnedViews: .sectionHeaders) {
                     ForEach(diff.hunks) { hunk in
                         Section {
-                            ForEach(Array(hunk.lines.enumerated()), id: \.offset) { _, line in
-                                UnifiedLineRow(line: line)
+                            ForEach(unifiedRows(for: hunk)) { row in
+                                UnifiedLineRow(line: row.line)
                             }
                         } header: {
                             HunkHeaderRow(hunk: hunk, action: hunkAction)
@@ -152,20 +169,20 @@ private struct Gutter: View {
 // MARK: - Split
 
 /// One row of the split view: a left (old) cell and a right (new) cell, either may be empty.
-private struct SplitRow: Identifiable {
-    let id: Int
+struct SplitRow: Identifiable {
+    let id: DiffRowID
     let left: DiffLine?
     let right: DiffLine?
 }
 
-private func splitRows(for hunk: DiffHunk) -> [SplitRow] {
+func splitRows(for hunk: DiffHunk) -> [SplitRow] {
     var rows: [SplitRow] = []
     var deletions: [DiffLine] = []
     var additions: [DiffLine] = []
 
     func flush() {
         for i in 0..<max(deletions.count, additions.count) {
-            rows.append(SplitRow(id: rows.count,
+            rows.append(SplitRow(id: DiffRowID(hunk: hunk.index, row: rows.count),
                                  left: i < deletions.count ? deletions[i] : nil,
                                  right: i < additions.count ? additions[i] : nil))
         }
@@ -179,7 +196,7 @@ private func splitRows(for hunk: DiffHunk) -> [SplitRow] {
         case .addition: additions.append(line)
         case .context:
             flush()
-            rows.append(SplitRow(id: rows.count, left: line, right: line))
+            rows.append(SplitRow(id: DiffRowID(hunk: hunk.index, row: rows.count), left: line, right: line))
         }
     }
     flush()

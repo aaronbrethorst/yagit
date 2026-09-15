@@ -195,3 +195,29 @@ struct RepositoryStoreTests {
     }
 }
 
+
+/// Diff rows live in one LazyVStack across every hunk, so their identities must be unique across hunks;
+/// duplicates make SwiftUI leave the later hunks' rows blank.
+struct DiffRowIdentityTests {
+    private let hunks = (0..<3).map { index in
+        DiffHunk(index: index, header: "@@ hunk \(index) @@", oldStart: 1, oldLines: 3, newStart: 1, newLines: 3,
+                 lines: [
+                     DiffLine(kind: .context, oldLineNumber: 1, newLineNumber: 1, text: "a"),
+                     DiffLine(kind: .deletion, oldLineNumber: 2, newLineNumber: nil, text: "b"),
+                     DiffLine(kind: .addition, oldLineNumber: nil, newLineNumber: 2, text: "c"),
+                     DiffLine(kind: .context, oldLineNumber: 3, newLineNumber: 3, text: "d"),
+                 ])
+    }
+
+    @Test func unifiedRowIDsAreUniqueAcrossHunks() {
+        let ids = hunks.flatMap(unifiedRows(for:)).map(\.id)
+        #expect(ids.count == 12)
+        #expect(Set(ids).count == ids.count)
+    }
+
+    @Test func splitRowIDsAreUniqueAcrossHunks() {
+        let ids = hunks.flatMap(splitRows(for:)).map(\.id)
+        #expect(ids.count == 9)
+        #expect(Set(ids).count == ids.count)
+    }
+}
