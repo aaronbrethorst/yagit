@@ -19,7 +19,7 @@ struct RepositoryWindow: View {
             }
         }
         .navigationTitle(url.lastPathComponent)
-        .navigationSubtitle(url.path)
+        .navigationDocument(url)
         .task {
             do {
                 let store = try RepositoryStore(url: url)

@@ -7,37 +7,37 @@ struct ChangesList: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            List(selection: selection) {
-                Section {
-                    ForEach(store.staged) { file in
-                        FileRow(file: file, checkbox: store.isOnBothSides(file.path) ? .mixed : .on) {
-                            store.toggle(file: file)
+            if store.staged.isEmpty && store.unstaged.isEmpty {
+                ContentUnavailableView("No changes", systemImage: "checkmark.circle",
+                                       description: Text("The working tree is clean."))
+                    .frame(maxHeight: .infinity)
+            } else {
+                List(selection: selection) {
+                    Section {
+                        ForEach(store.staged) { file in
+                            FileRow(file: file, checkbox: store.isOnBothSides(file.path) ? .mixed : .on) {
+                                store.toggle(file: file)
+                            }
+                            .tag(file.id)
                         }
-                        .tag(file.id)
+                    } header: {
+                        SectionHeader(title: "Staged files", count: store.staged.count,
+                                      checkbox: stagedHeaderState) { store.toggleAll(side: .staged) }
                     }
-                } header: {
-                    SectionHeader(title: "Staged files", count: store.staged.count,
-                                  checkbox: stagedHeaderState) { store.toggleAll(side: .staged) }
-                }
-                Section {
-                    ForEach(store.unstaged) { file in
-                        FileRow(file: file, checkbox: .off) {
-                            store.toggle(file: file)
+                    Section {
+                        ForEach(store.unstaged) { file in
+                            FileRow(file: file, checkbox: .off) {
+                                store.toggle(file: file)
+                            }
+                            .tag(file.id)
                         }
-                        .tag(file.id)
+                    } header: {
+                        SectionHeader(title: "Unstaged files", count: store.unstaged.count,
+                                      checkbox: unstagedHeaderState) { store.toggleAll(side: .unstaged) }
                     }
-                } header: {
-                    SectionHeader(title: "Unstaged files", count: store.unstaged.count,
-                                  checkbox: unstagedHeaderState) { store.toggleAll(side: .unstaged) }
                 }
-            }
-            .listStyle(.inset)
-            .scrollContentBackground(.hidden)
-            .overlay {
-                if store.staged.isEmpty && store.unstaged.isEmpty {
-                    ContentUnavailableView("No changes", systemImage: "checkmark.circle",
-                                           description: Text("The working tree is clean."))
-                }
+                .listStyle(.inset)
+                .scrollContentBackground(.hidden)
             }
             Divider()
             CommitBox(store: store)
