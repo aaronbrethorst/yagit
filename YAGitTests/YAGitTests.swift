@@ -151,6 +151,33 @@ struct RepositoryStoreTests {
         print("Screenshots written to \(directory.path)")
     }
 
+    /// A commit touching many files wraps its chips onto many rows; that must not grow the window.
+    @Test func manyFileCommitDoesNotOverflowWindow() async throws {
+        let fixture = try makeFixture()
+        for i in 1...40 {
+            try fixture.write("Resources/locale\(i).lproj/Localizable.strings", "\"key\" = \"value \(i)\";\n")
+        }
+        try fixture.commitAll("Translate into forty locales")
+        let store = try RepositoryStore(url: fixture.url)
+        await store.load()
+        store.mode = .history
+        store.selectCommit(sha: store.history[0].sha)
+
+        let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 1100, height: 700),
+                              styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)
+        let hostingView = NSHostingView(rootView: RepositoryContent(store: store))
+        window.contentView = hostingView
+        window.orderFront(nil)
+        try await settle()
+        #expect(store.commitDetail?.files.count ?? 0 >= 40)
+
+        #expect(hostingView.fittingSize.height <= 700)
+        let directory = URL(fileURLWithPath: NSTemporaryDirectory()).appendingPathComponent("yagit-screens", isDirectory: true)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        try snapshot(window, to: directory.appendingPathComponent("history-many-files.png"))
+        window.close()
+    }
+
     private func settle() async throws {
         for _ in 0..<6 {
             try await Task.sleep(for: .milliseconds(120))

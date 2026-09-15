@@ -16,13 +16,22 @@ struct CommitDetailPane: View {
                         .font(.system(size: 11))
                         .foregroundStyle(.secondary)
                     if let files = store.commitDetail?.files {
-                        FlowLayout(spacing: 6) {
-                            ForEach(files) { file in
-                                FileChip(file: file, isSelected: file.path == store.selectedCommitFile) {
-                                    store.selectedCommitFile = file.path
+                        // Scrolls once the chips pass a few rows, so a large commit can't crowd out the diff.
+                        // Measured at its ideal height: FlowLayout's height depends on its width, and the
+                        // zero-width minimum probe would otherwise demand one row per file from the window.
+                        ScrollView(.vertical) {
+                            FlowLayout(spacing: 6) {
+                                ForEach(files) { file in
+                                    FileChip(file: file, isSelected: file.path == store.selectedCommitFile) {
+                                        store.selectedCommitFile = file.path
+                                    }
                                 }
                             }
+                            .padding(1)  // keeps the selected chip's outline clear of the scroll clip
                         }
+                        .scrollBounceBehavior(.basedOnSize)
+                        .frame(maxHeight: 96)
+                        .fixedSize(horizontal: false, vertical: true)
                     } else {
                         ProgressView().controlSize(.small)
                     }
