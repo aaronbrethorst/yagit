@@ -6,6 +6,10 @@
 	objectVersion = 110;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		93E8FE553059F469000EDE50 /* SwiftGitX in Frameworks */ = {isa = PBXBuildFile; productRef = 93E8FE543059F469000EDE50 /* SwiftGitX */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		93E8FE393059F41D000EDE50 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -51,6 +55,7 @@
 		93E8FE263059F41C000EDE50 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
+				93E8FE553059F469000EDE50 /* SwiftGitX in Frameworks */,
 			);
 		};
 		93E8FE353059F41D000EDE50 /* Frameworks */ = {
@@ -103,6 +108,9 @@
 				93E8FE2B3059F41C000EDE50 /* YAGit */,
 			);
 			name = YAGit;
+			packageProductDependencies = (
+				93E8FE543059F469000EDE50 /* SwiftGitX */,
+			);
 			productName = YAGit;
 			productReference = 93E8FE293059F41C000EDE50 /* YAGit.app */;
 			productType = "com.apple.product-type.application";
@@ -181,6 +189,9 @@
 			);
 			mainGroup = 93E8FE203059F41C000EDE50;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				93E8FE533059F469000EDE50 /* XCRemoteSwiftPackageReference "SwiftGitX" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 93E8FE2A3059F41C000EDE50 /* Products */;
 			projectDirPath = "";
@@ -543,6 +554,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		93E8FE533059F469000EDE50 /* XCRemoteSwiftPackageReference "SwiftGitX" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/ibrahimcetin/SwiftGitX.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.4.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		93E8FE543059F469000EDE50 /* SwiftGitX */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 93E8FE533059F469000EDE50 /* XCRemoteSwiftPackageReference "SwiftGitX" */;
+			productName = SwiftGitX;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 93E8FE213059F41C000EDE50 /* Project object */;
 	validationLevel = 1;
