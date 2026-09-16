@@ -50,7 +50,7 @@ struct RepositoryStoreTests {
         #expect(store.changedFileCount == 4)
         #expect(store.selectedChange?.path == "Sources/App/Legacy.swift")
         #expect(store.currentDiff?.status == .deleted)
-        #expect(store.history.map(\.summary) == ["Bump model version", "Initial commit"])
+        #expect(store.history.map(\.commit.summary) == ["Bump model version", "Initial commit"])
         #expect(store.snapshot?.author == Author(name: "Aaron Brethorst", email: "aaron@onebusaway.org"))
     }
 
@@ -78,7 +78,7 @@ struct RepositoryStoreTests {
         #expect(store.statusText.hasPrefix("Committed "))
         #expect(store.statusText.hasSuffix(" to feature/trip-planner"))
         #expect(store.commitMessage.isEmpty)
-        #expect(store.history.first?.summary == "Wire up the planner")
+        #expect(store.history.first?.commit.summary == "Wire up the planner")
         #expect(store.staged.isEmpty)
         #expect(store.unstaged.map(\.path) == [
             "Sources/App/Legacy.swift", "Sources/App/TripPlanner.swift", "Sources/App/TripViewController.swift",
@@ -102,7 +102,7 @@ struct RepositoryStoreTests {
         #expect(store.currentBranch == "main")
         #expect(store.statusText == "Switched to branch ‘main’")
         #expect(store.snapshot?.current?.ahead == 1)
-        #expect(store.history.map(\.summary) == ["Bump model version", "Initial commit"])
+        #expect(store.history.map(\.commit.summary) == ["Bump model version", "Initial commit"])
 
         store.fetch()
         #expect(store.isFetching)
@@ -138,7 +138,7 @@ struct RepositoryStoreTests {
         try snapshot(window, to: directory.appendingPathComponent("changes-split.png"))
 
         store.mode = .history
-        store.selectCommit(sha: store.history[0].sha)
+        store.selectCommit(sha: store.history[0].commit.sha)
         try await settle()
         try snapshot(window, to: directory.appendingPathComponent("history.png"))
 
@@ -161,7 +161,7 @@ struct RepositoryStoreTests {
         let store = try RepositoryStore(url: fixture.url)
         await store.load()
         store.mode = .history
-        store.selectCommit(sha: store.history[0].sha)
+        store.selectCommit(sha: store.history[0].commit.sha)
 
         let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 1100, height: 700),
                               styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)
@@ -190,7 +190,7 @@ struct RepositoryStoreTests {
         let store = try RepositoryStore(url: fixture.url)
         await store.load()
         store.mode = .history
-        store.selectCommit(sha: store.history[0].sha)
+        store.selectCommit(sha: store.history[0].commit.sha)
 
         let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 1100, height: 700),
                               styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)

@@ -200,6 +200,56 @@ public struct GraphRow: Sendable, Hashable {
     }
 }
 
+/// A ref shown as a badge on the commit it points to.
+public struct RefLabel: Sendable, Hashable {
+    public enum Kind: Sendable, Hashable {
+        /// HEAD, only when detached.
+        case head
+        case localBranch(isCurrent: Bool)
+        case remoteBranch
+        case tag
+    }
+
+    /// Short name: `main`, `origin/main`, `v2.8.1`, `HEAD`.
+    public let name: String
+    public let kind: Kind
+
+    public init(name: String, kind: Kind) {
+        self.name = name
+        self.kind = kind
+    }
+
+    /// Badge order within one commit: detached HEAD, current branch, other local branches, remotes, tags.
+    static func displayOrder(_ lhs: RefLabel, _ rhs: RefLabel) -> Bool {
+        lhs.rank != rhs.rank ? lhs.rank < rhs.rank : lhs.name.localizedStandardCompare(rhs.name) == .orderedAscending
+    }
+
+    private var rank: Int {
+        switch kind {
+        case .head: 0
+        case .localBranch(isCurrent: true): 1
+        case .localBranch: 2
+        case .remoteBranch: 3
+        case .tag: 4
+        }
+    }
+}
+
+/// One row of the History list.
+public struct HistoryEntry: Sendable, Hashable, Identifiable {
+    public let commit: CommitSummary
+    public let refs: [RefLabel]
+    public let graph: GraphRow
+
+    public init(commit: CommitSummary, refs: [RefLabel], graph: GraphRow) {
+        self.commit = commit
+        self.refs = refs
+        self.graph = graph
+    }
+
+    public var id: String { commit.sha }
+}
+
 public struct RepositorySnapshot: Sendable, Hashable {
     public let currentBranch: String
     public let branches: [BranchInfo]

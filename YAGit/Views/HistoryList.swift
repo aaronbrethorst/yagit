@@ -9,9 +9,9 @@ struct HistoryList: View {
     var body: some View {
         List(selection: selection) {
             Section {
-                ForEach(store.history) { commit in
-                    CommitRow(commit: commit)
-                        .tag(commit.sha)
+                ForEach(store.history) { entry in
+                    CommitRow(commit: entry.commit)
+                        .tag(entry.commit.sha)
                 }
             } header: {
                 HStack(spacing: 8) {

@@ -35,7 +35,7 @@ struct PaneFocusTests {
         // History adds the commit-files column; focus must be able to reach it.
         store.mode = .history
         try await settle(window)
-        store.selectCommit(sha: store.history[0].sha)
+        store.selectCommit(sha: store.history[0].commit.sha)
         try await settle(window)
         store.focusedPane = .commitFiles
         try await settle(window)
@@ -53,7 +53,7 @@ struct PaneFocusTests {
 
         store.mode = .history
         try await settle(window)
-        store.selectCommit(sha: store.history[0].sha)
+        store.selectCommit(sha: store.history[0].commit.sha)
         try await settle(window)
         store.focusedPane = .commitFiles
         try await settle(window)

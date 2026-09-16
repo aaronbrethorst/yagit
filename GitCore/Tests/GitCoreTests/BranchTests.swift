@@ -16,7 +16,7 @@ import Testing
         #expect(snapshot.currentBranch == "feature/trip-planner")
         #expect(snapshot.branches.map(\.name) == ["feature/trip-planner", "main"])
         #expect(snapshot.unstaged.map(\.path) == ["a.txt"])
-        #expect(try await repo.history().map(\.summary) == ["First"])
+        #expect(try await repo.history().map(\.commit.summary) == ["First"])
         #expect(try fixture.git("rev-parse", "--abbrev-ref", "HEAD").trimmingCharacters(in: .whitespacesAndNewlines) == "feature/trip-planner")
     }
 
@@ -40,7 +40,7 @@ import Testing
         await #expect(throws: GitError.self) { try await repo.createBranch(named: "bad name") }
     }
 
-    @Test func commitsOnANewBranchDoNotAppearOnTheParent() async throws {
+    @Test func commitsOnANewBranchStayInHistoryAfterSwitchingBack() async throws {
         let fixture = try TestRepository()
         try fixture.write("a.txt", "1\n")
         try fixture.commitAll("First")
@@ -50,10 +50,13 @@ import Testing
         try fixture.write("a.txt", "2\n")
         try await repo.stage(path: "a.txt")
         try await repo.commit(message: "On feature")
-        #expect(try await repo.history().map(\.summary) == ["On feature", "First"])
+        #expect(try await repo.history().map(\.commit.summary) == ["On feature", "First"])
 
         try await repo.switchBranch(named: "main")
-        #expect(try await repo.history().map(\.summary) == ["First"])
+        let history = try await repo.history()
+        #expect(history.map(\.commit.summary) == ["On feature", "First"])
+        #expect(history[0].refs == [RefLabel(name: "feature", kind: .localBranch(isCurrent: false))])
+        #expect(history[1].refs == [RefLabel(name: "main", kind: .localBranch(isCurrent: true))])
         #expect(try fixture.read("a.txt") == "1\n")
     }
 

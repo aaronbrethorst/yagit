@@ -47,7 +47,7 @@ extension GitRepository {
         return branches.sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
     }
 
-    private func remoteBranches(current: String) throws -> [String] {
+    func remoteBranches(current: String) throws -> [String] {
         var names: [String] = []
         try forEachBranch(type: GIT_BRANCH_REMOTE) { _, name in
             if name == "origin/main" || name == "origin/\(current)" { names.append(name) }
@@ -55,7 +55,7 @@ extension GitRepository {
         return names.sorted()
     }
 
-    private func forEachBranch(type: git_branch_t, _ body: (OpaquePointer, String) throws -> Void) throws {
+    func forEachBranch(type: git_branch_t, _ body: (OpaquePointer, String) throws -> Void) throws {
         var iterator: OpaquePointer?
         try check(git_branch_iterator_new(&iterator, repo, type), "branch list")
         defer { git_branch_iterator_free(iterator) }

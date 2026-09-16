@@ -39,7 +39,7 @@ final class RepositoryStore {
     var commitMessage = ""
 
     // History mode
-    var history: [CommitSummary] = []
+    var history: [HistoryEntry] = []
     var selectedCommitSHA: String?
     var commitDetail: CommitDetail?
     var selectedCommitFile: String?
@@ -83,7 +83,7 @@ final class RepositoryStore {
         mode == .changes && selectedChange != nil && !isEditingCommitMessage && !isPresentingNewBranch
     }
 
-    var selectedCommit: CommitSummary? { history.first { $0.sha == selectedCommitSHA } }
+    var selectedCommit: CommitSummary? { history.first { $0.commit.sha == selectedCommitSHA }?.commit }
 
     var selectedCommitDiff: FileDiff? {
         commitDetail?.files.first { $0.path == selectedCommitFile }
