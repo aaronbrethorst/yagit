@@ -110,6 +110,11 @@ struct RepositoryContent: View {
         }
         .navigationSplitViewStyle(.balanced)
         .toolbar { RepositoryToolbar(store: store) }
+        // Shift-Tab arrives as a back-tab character rather than Tab with a modifier.
+        .onKeyPress(keys: [.tab, "\u{19}"], phases: .down) { press in
+            store.focusAdjacentPane(reverse: press.key != .tab || press.modifiers.contains(.shift))
+                ? .handled : .ignored
+        }
     }
 }
 
