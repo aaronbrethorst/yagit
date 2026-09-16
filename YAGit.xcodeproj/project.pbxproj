@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		93E8FE553059F469000EDE50 /* SwiftGitX in Frameworks */ = {isa = PBXBuildFile; productRef = 93E8FE543059F469000EDE50 /* SwiftGitX */; };
 		93E8FE613059F500000EDE50 /* GitCore in Frameworks */ = {isa = PBXBuildFile; productRef = 93E8FE603059F500000EDE50 /* GitCore */; };
 /* End PBXBuildFile section */
 
@@ -56,7 +55,6 @@
 		93E8FE263059F41C000EDE50 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			files = (
-				93E8FE553059F469000EDE50 /* SwiftGitX in Frameworks */,
 				93E8FE613059F500000EDE50 /* GitCore in Frameworks */,
 			);
 		};
@@ -111,7 +109,6 @@
 			);
 			name = YAGit;
 			packageProductDependencies = (
-				93E8FE543059F469000EDE50 /* SwiftGitX */,
 				93E8FE603059F500000EDE50 /* GitCore */,
 			);
 			productName = YAGit;
@@ -193,7 +190,6 @@
 			mainGroup = 93E8FE203059F41C000EDE50;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				93E8FE533059F469000EDE50 /* XCRemoteSwiftPackageReference "SwiftGitX" */,
 				93E8FE623059F500000EDE50 /* XCLocalSwiftPackageReference "GitCore" */,
 			);
 			preferredProjectObjectVersion = 77;
@@ -564,23 +560,7 @@
 		};
 /* End XCLocalSwiftPackageReference section */
 
-/* Begin XCRemoteSwiftPackageReference section */
-		93E8FE533059F469000EDE50 /* XCRemoteSwiftPackageReference "SwiftGitX" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/ibrahimcetin/SwiftGitX.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.4.0;
-			};
-		};
-/* End XCRemoteSwiftPackageReference section */
-
 /* Begin XCSwiftPackageProductDependency section */
-		93E8FE543059F469000EDE50 /* SwiftGitX */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 93E8FE533059F469000EDE50 /* XCRemoteSwiftPackageReference "SwiftGitX" */;
-			productName = SwiftGitX;
-		};
 		93E8FE603059F500000EDE50 /* GitCore */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = GitCore;
