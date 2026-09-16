@@ -140,14 +140,18 @@ public struct CommitSummary: Sendable, Hashable, Identifiable {
     public let authorName: String
     public let authorEmail: String
     public let date: Date
+    /// Parent commits in libgit2 order: the first parent first, empty for a root commit.
+    public let parentSHAs: [String]
 
-    public init(sha: String, summary: String, message: String, authorName: String, authorEmail: String, date: Date) {
+    public init(sha: String, summary: String, message: String, authorName: String, authorEmail: String, date: Date,
+                parentSHAs: [String] = []) {
         self.sha = sha
         self.summary = summary
         self.message = message
         self.authorName = authorName
         self.authorEmail = authorEmail
         self.date = date
+        self.parentSHAs = parentSHAs
     }
 
     public var id: String { sha }

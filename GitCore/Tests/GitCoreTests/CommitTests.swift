@@ -74,6 +74,27 @@ import Testing
         #expect(try await repo.commitDetail(sha: root.sha).files.map(\.path) == ["a.txt", "b.txt"])
     }
 
+    @Test func commitSummariesCarryParentSHAs() async throws {
+        let fixture = try TestRepository()
+        try fixture.write("a.txt", "1\n")
+        try fixture.commitAll("First")
+        try fixture.git("checkout", "-q", "-b", "feature")
+        try fixture.write("b.txt", "b\n")
+        try fixture.commitAll("Feature")
+        try fixture.git("checkout", "-q", "main")
+        try fixture.write("c.txt", "c\n")
+        try fixture.commitAll("Main")
+        try fixture.git("merge", "-q", "--no-ff", "-m", "Merge feature", "feature")
+
+        let merge = try fixture.git("rev-parse", "HEAD").trimmingCharacters(in: .whitespacesAndNewlines)
+        let parents = try fixture.git("rev-parse", "HEAD^1", "HEAD^2").split(separator: "\n").map(String.init)
+        let root = try fixture.git("rev-list", "--max-parents=0", "HEAD").trimmingCharacters(in: .whitespacesAndNewlines)
+
+        let repo = try GitRepository(url: fixture.url)
+        #expect(try await repo.commitDetail(sha: merge).commit.parentSHAs == parents)
+        #expect(try await repo.commitDetail(sha: root).commit.parentSHAs.isEmpty)
+    }
+
     @Test func emptyRepositoryHasNoHistory() async throws {
         let fixture = try TestRepository()
         let repo = try GitRepository(url: fixture.url)

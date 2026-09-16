@@ -96,6 +96,7 @@ extension CommitSummary {
             message: String(cString: git_commit_message(commit)),
             authorName: String(cString: author.name),
             authorEmail: String(cString: author.email),
-            date: Date(timeIntervalSince1970: TimeInterval(git_commit_time(commit))))
+            date: Date(timeIntervalSince1970: TimeInterval(git_commit_time(commit))),
+            parentSHAs: (0..<git_commit_parentcount(commit)).map { String(oid: git_commit_parent_id(commit, $0)!.pointee) })
     }
 }
