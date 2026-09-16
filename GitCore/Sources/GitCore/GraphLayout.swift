@@ -7,6 +7,8 @@ import Foundation
 /// the same parent meet at that parent's dot. Color 0 is reserved for the mainline; other lanes get
 /// 1, 2, 3, … in the order they appear. At the bottom of each row, open lanes pack left into
 /// columns that have freed up (never column 0 while there is a mainline), keeping their order.
+///
+/// Precondition: `commits` lists every child before its parents, as a topological revwalk does.
 public enum GraphLayout {
     private struct Lane {
         let target: String

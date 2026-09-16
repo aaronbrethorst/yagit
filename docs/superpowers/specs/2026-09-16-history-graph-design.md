@@ -58,6 +58,11 @@ All new types are `Sendable, Hashable`. `RefLabel.name` is the short name (`main
      set `remoteBranches(current:)` returns for the sidebar,
    - `git_revwalk_push_glob(walk, "refs/tags")`, which peels annotated tags and silently skips
      tags that don't peel to a commit.
+
+   Only `origin/main` and `origin/<current>` are walked, so a commit that exists only on
+   `origin/<other branch>` leaves history (and its selection clears) when you switch away from
+   that branch.
+
    If nothing was pushed (unborn HEAD and no refs), return `[]`. An unborn HEAD with other
    branches (orphan checkout) still shows those branches.
 2. Collect up to `limit` commits.
