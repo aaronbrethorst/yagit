@@ -4,6 +4,7 @@ import SwiftUI
 /// Split stage: Staged files above Unstaged files, commit box pinned to the bottom.
 struct ChangesList: View {
     @Bindable var store: RepositoryStore
+    var focus: FocusState<RepositoryStore.Pane?>.Binding
 
     var body: some View {
         VStack(spacing: 0) {
@@ -38,6 +39,8 @@ struct ChangesList: View {
                 }
                 .listStyle(.inset)
                 .scrollContentBackground(.hidden)
+                .paneFocus(focus, .list)
+                .claimsPaneFocus(store, .list)
             }
             Divider()
             CommitBox(store: store)
@@ -46,7 +49,10 @@ struct ChangesList: View {
     }
 
     private var selection: Binding<ChangedFile.ID?> {
-        Binding(get: { store.selectedChangeID }, set: { store.select(change: $0) })
+        Binding(get: { store.selectedChangeID }, set: {
+            store.focusedPane = .list
+            store.select(change: $0)
+        })
     }
 
     private var stagedHeaderState: CheckboxState {

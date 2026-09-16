@@ -35,6 +35,7 @@ struct RepositoryWindow: View {
 struct RepositoryContent: View {
     @Bindable var store: RepositoryStore
     @State private var columnVisibility: NavigationSplitViewVisibility = .all
+    @FocusState private var focusedPane: RepositoryStore.Pane?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -44,16 +45,36 @@ struct RepositoryContent: View {
         .sheet(isPresented: $store.isPresentingNewBranch) { NewBranchSheet(store: store) }
         .focusedSceneValue(\.repositoryStore, store)
         .frame(minWidth: 900, minHeight: 480)
+        // Keep the store and the real first responder in step in both directions: clicks and
+        // programmatic moves push into @FocusState, Tab pushes back out.
+        .onAppear { focusedPane = store.focusedPane }
+        .onChange(of: store.focusedPane) { _, pane in
+            if focusedPane != pane { focusedPane = pane }
+        }
+        .onChange(of: focusedPane) { _, pane in
+            if let pane, store.focusedPane != pane { store.focusedPane = pane }
+        }
+        // Switching modes rebuilds the content column and retires the commit-files column, so
+        // focus can be left on a view that no longer exists. Re-assert it once the new lists are
+        // in the tree — the sidebar survives the switch, so focus there is left alone.
+        .task(id: store.mode) {
+            if store.mode == .changes, store.focusedPane == .commitFiles { store.focusedPane = .list }
+            guard store.focusedPane != .sidebar else { return }
+            let pane = store.focusedPane
+            focusedPane = nil
+            await Task.yield()
+            focusedPane = pane
+        }
     }
 
     private var splitView: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
-            SidebarView(store: store)
+            SidebarView(store: store, focus: $focusedPane)
                 .navigationSplitViewColumnWidth(min: 180, ideal: 212, max: 320)
         } content: {
             switch store.mode {
-            case .changes: ChangesList(store: store)
-            case .history: HistoryList(store: store)
+            case .changes: ChangesList(store: store, focus: $focusedPane)
+            case .history: HistoryList(store: store, focus: $focusedPane)
             }
         } detail: {
             switch store.mode {
@@ -62,7 +83,7 @@ struct RepositoryContent: View {
             case .history:
                 // Files get their own column so a large commit lists cleanly instead of wrapping into chips.
                 HSplitView {
-                    CommitFilesList(store: store)
+                    CommitFilesList(store: store, focus: $focusedPane)
                         .frame(minWidth: 180, idealWidth: 216, maxWidth: 360)
                     CommitDetailPane(store: store)
                         .frame(minWidth: 320, maxWidth: .infinity)

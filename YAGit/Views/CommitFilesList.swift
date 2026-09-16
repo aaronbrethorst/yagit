@@ -4,6 +4,7 @@ import SwiftUI
 /// The files touched by the selected commit, listed between History and the diff.
 struct CommitFilesList: View {
     @Bindable var store: RepositoryStore
+    var focus: FocusState<RepositoryStore.Pane?>.Binding
 
     var body: some View {
         List(selection: selection) {
@@ -41,10 +42,15 @@ struct CommitFilesList: View {
                     .foregroundStyle(.secondary)
             }
         }
+        .paneFocus(focus, .commitFiles)
+        .claimsPaneFocus(store, .commitFiles)
     }
 
     private var selection: Binding<String?> {
-        Binding(get: { store.selectedCommitFile }, set: { store.selectedCommitFile = $0 })
+        Binding(get: { store.selectedCommitFile }, set: {
+            store.focusedPane = .commitFiles
+            store.selectedCommitFile = $0
+        })
     }
 }
 

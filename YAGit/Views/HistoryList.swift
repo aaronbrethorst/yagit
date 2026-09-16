@@ -4,6 +4,7 @@ import SwiftUI
 /// One row per commit on the current branch.
 struct HistoryList: View {
     @Bindable var store: RepositoryStore
+    var focus: FocusState<RepositoryStore.Pane?>.Binding
 
     var body: some View {
         List(selection: selection) {
@@ -35,10 +36,15 @@ struct HistoryList: View {
             }
         }
         .navigationSplitViewColumnWidth(min: 280, ideal: 326, max: 480)
+        .paneFocus(focus, .list)
+        .claimsPaneFocus(store, .list)
     }
 
     private var selection: Binding<String?> {
-        Binding(get: { store.selectedCommitSHA }, set: { store.selectCommit(sha: $0) })
+        Binding(get: { store.selectedCommitSHA }, set: {
+            store.focusedPane = .list
+            store.selectCommit(sha: $0)
+        })
     }
 }
 

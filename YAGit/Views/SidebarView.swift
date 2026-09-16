@@ -4,6 +4,7 @@ import SwiftUI
 /// Workspace / Branches / Remotes. Workspace rows drive the list column; branch rows check out.
 struct SidebarView: View {
     @Bindable var store: RepositoryStore
+    var focus: FocusState<RepositoryStore.Pane?>.Binding
 
     var body: some View {
         List(selection: modeSelection) {
@@ -20,7 +21,10 @@ struct SidebarView: View {
                 ForEach(store.branches) { branch in
                     BranchRow(branch: branch)
                         .contentShape(Rectangle())
-                        .onTapGesture { store.switchBranch(named: branch.name) }
+                        .onTapGesture {
+                            store.focusedPane = .sidebar
+                            store.switchBranch(named: branch.name)
+                        }
                         .selectionDisabled()
                 }
             }
@@ -34,12 +38,18 @@ struct SidebarView: View {
             }
         }
         .listStyle(.sidebar)
+        .paneFocus(focus, .sidebar)
+        .claimsPaneFocus(store, .sidebar)
     }
 
     private var modeSelection: Binding<RepositoryStore.Mode?> {
         Binding(
             get: { store.mode },
-            set: { if let mode = $0 { store.mode = mode } }
+            set: {
+                guard let mode = $0 else { return }
+                store.mode = mode
+                store.focusedPane = .sidebar
+            }
         )
     }
 }

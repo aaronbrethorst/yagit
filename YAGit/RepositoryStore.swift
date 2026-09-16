@@ -12,11 +12,20 @@ final class RepositoryStore {
         case history
     }
 
+    /// The list the arrow keys act on. Mirrored into a `@FocusState` by `RepositoryContent`
+    /// so clicking a row and tabbing between panes both land in the same place.
+    enum Pane: Hashable {
+        case sidebar
+        case list
+        case commitFiles
+    }
+
     let url: URL
     let repository: GitRepository
 
     var snapshot: RepositorySnapshot?
     var mode: Mode = .changes
+    var focusedPane: Pane = .list
 
     // Changes mode
     var selectedChangeID: ChangedFile.ID?
