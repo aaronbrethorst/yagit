@@ -168,6 +168,38 @@ public struct CommitDetail: Sendable, Hashable {
     }
 }
 
+/// A piece of lane line within half a row: from a column at one edge of the half to a column at the
+/// other. Equal columns draw a straight line; different columns draw a curve.
+public struct GraphSegment: Sendable, Hashable {
+    public let fromColumn: Int
+    public let toColumn: Int
+    public let colorIndex: Int
+
+    public init(fromColumn: Int, toColumn: Int, colorIndex: Int) {
+        self.fromColumn = fromColumn
+        self.toColumn = toColumn
+        self.colorIndex = colorIndex
+    }
+}
+
+/// One commit's slice of the lane graph. `upper` runs from the row's top edge to the dot's center,
+/// `lower` from the dot's center to the bottom edge.
+public struct GraphRow: Sendable, Hashable {
+    public let column: Int
+    public let colorIndex: Int
+    public let isMerge: Bool
+    public let upper: [GraphSegment]
+    public let lower: [GraphSegment]
+
+    public init(column: Int, colorIndex: Int, isMerge: Bool, upper: [GraphSegment], lower: [GraphSegment]) {
+        self.column = column
+        self.colorIndex = colorIndex
+        self.isMerge = isMerge
+        self.upper = upper
+        self.lower = lower
+    }
+}
+
 public struct RepositorySnapshot: Sendable, Hashable {
     public let currentBranch: String
     public let branches: [BranchInfo]
