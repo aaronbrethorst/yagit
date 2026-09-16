@@ -2010,6 +2010,14 @@ git commit -m "Adds a mockup render test for the history graph and a history tim
 
 Fill in during Task 8:
 
-- `app-modules` timing: _
-- `ios` timing: _
-- Visual differences from the mockup that remain, and why: _
+- `app-modules` timing: 65–74 ms over three runs (5,055 commits and 201 tags in the repo; 2,000 entries returned, 12 raw lanes). Debug build via `swift test`, Apple M4, 2026-09-16.
+- `ios` timing: 69–81 ms over three runs (3,575 commits and 34 tags; 2,000 entries returned, 32 raw lanes). Both are well under the 1 s follow-up threshold. The raw lane counts exceed the 8-lane cap, so on these repos some side lanes and their dots are skipped (the accepted §5 wide-graph risk).
+- Visual differences from the mockup that remain, and why:
+  - `fix/arrival-sort` and `release/2.9` share column 1 instead of columns 3 and 2, as spec §2 describes, so the graph is 2 lanes (28pt) wide and the text starts further left than in the mockup.
+  - Lane colors after index 3 differ: the #418 branch is green and the #412 branch is pink (system pink reads red-ish), where the mockup uses purple and green. The palette rotates in spec order.
+  - The root row carries three extra refs (`archive/2.7`, `v2.7.0-rc1`, `v2.7.0-rc2`) to exercise the `+1` badge, so its summary truncates to "I…".
+  - Bylines use the full author name ("Aaron Brethorst") and the fixture's 12-hour Aug 29 dates, so most bylines tail-truncate at the 326pt pane width. The mockup's first names and 24-hour times fit.
+  - The selected row uses the app's indigo accent color, not the mockup's system blue.
+  - The "History" header keeps the app's existing 11pt semibold secondary style shared with the Files header. The mockup's header is larger and darker. Spec §3 doesn't restyle it.
+  - The offscreen harness renders the sidebar selection as a black band and doesn't draw window chrome faithfully. Both are harness artifacts.
+  - The test host isn't the active app, so AppKit never emphasizes a selection offscreen. The render test mirrors AppKit's rule (only the first-responder list's row views are emphasized) so the focused render shows the accent selection.
