@@ -1,5 +1,6 @@
 import Foundation
 import GitCore
+import SwiftUI
 import Testing
 @testable import YAGit
 
@@ -63,5 +64,28 @@ struct CommitDateTests {
     func formats(date: Date, locale: String, expected: String) {
         let text = CommitDate.string(for: date, now: Self.now, calendar: utcCalendar(locale))
         #expect(plainSpaces(text) == expected)
+    }
+}
+
+@MainActor
+struct GraphPaletteTests {
+    @Test func mainlineIsBlue() {
+        #expect(GraphPalette.color(for: 0) == .blue)
+    }
+
+    @Test(arguments: 1...6)
+    func laneColorsAreNeverBlue(index: Int) {
+        #expect(GraphPalette.color(for: index) != .blue)
+    }
+
+    @Test func laneColorsAreDistinctAndWrap() {
+        #expect(Set((1...6).map(GraphPalette.color(for:))).count == 6)
+        #expect(GraphPalette.color(for: 7) == GraphPalette.color(for: 1))
+        #expect(GraphPalette.color(for: 13) == GraphPalette.color(for: 1))
+    }
+
+    @Test func columnWidthFitsEveryLane() {
+        #expect(GraphColumn.width(laneCount: 1) == 18)
+        #expect(GraphColumn.width(laneCount: 8) == 88)
     }
 }
