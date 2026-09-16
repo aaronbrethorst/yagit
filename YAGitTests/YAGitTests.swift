@@ -178,6 +178,38 @@ struct RepositoryStoreTests {
         window.close()
     }
 
+    /// HSplitView sizes its children to their ideal height, so a binary file's placeholder must not
+    /// collapse the Files column and the detail pane to a strip in the middle of the window.
+    @Test func binaryFileKeepsHistoryPanesFullHeight() async throws {
+        let fixture = try makeFixture()
+        try fixture.write("Sources/App/Icon.swift", "let icon = \"icon\"\n")
+        let png = fixture.url.appendingPathComponent("Assets/icon.png")
+        try FileManager.default.createDirectory(at: png.deletingLastPathComponent(), withIntermediateDirectories: true)
+        try Data([0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, 0x00, 0x00, 0x00, 0x0D]).write(to: png)
+        try fixture.commitAll("Add app icon")
+        let store = try RepositoryStore(url: fixture.url)
+        await store.load()
+        store.mode = .history
+        store.selectCommit(sha: store.history[0].sha)
+
+        let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 1100, height: 700),
+                              styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)
+        let hostingView = NSHostingView(rootView: RepositoryContent(store: store))
+        window.contentView = hostingView
+        window.orderFront(nil)
+        try await settle()
+        store.selectedCommitFile = "Assets/icon.png"
+        try await settle()
+        #expect(store.selectedCommitDiff?.isBinary == true)
+
+        let split = try #require(hostingView.descendants(of: NSSplitView.self).first { $0.arrangedSubviews.count == 2 })
+        #expect(split.frame.height > 500)
+        for pane in split.arrangedSubviews {
+            #expect(abs(pane.frame.height - split.frame.height) < 1, "pane \(pane.frame) in split \(split.frame)")
+        }
+        window.close()
+    }
+
     /// A clean working tree shows only the empty state, not two empty section headers.
     @Test func cleanTreeScreenshot() async throws {
         let fixture = try TestRepository()
@@ -240,5 +272,11 @@ struct DiffRowIdentityTests {
         let ids = hunks.flatMap(splitRows(for:)).map(\.id)
         #expect(ids.count == 9)
         #expect(Set(ids).count == ids.count)
+    }
+}
+
+private extension NSView {
+    func descendants<T: NSView>(of type: T.Type) -> [T] {
+        subviews.flatMap { (($0 as? T).map { [$0] } ?? []) + $0.descendants(of: type) }
     }
 }

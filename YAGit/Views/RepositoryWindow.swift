@@ -82,11 +82,13 @@ struct RepositoryContent: View {
                 DiffPane(store: store)
             case .history:
                 // Files get their own column so a large commit lists cleanly instead of wrapping into chips.
+                // HSplitView lays its children out at their ideal height, not its own, so a child with a
+                // finite ideal height (the binary-file placeholder) would collapse the whole split.
                 HSplitView {
                     CommitFilesList(store: store, focus: $focusedPane)
-                        .frame(minWidth: 180, idealWidth: 216, maxWidth: 360)
+                        .frame(minWidth: 180, idealWidth: 216, maxWidth: 360, maxHeight: .infinity)
                     CommitDetailPane(store: store)
-                        .frame(minWidth: 320, maxWidth: .infinity)
+                        .frame(minWidth: 320, maxWidth: .infinity, maxHeight: .infinity)
                 }
             }
         }
