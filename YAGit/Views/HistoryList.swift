@@ -57,7 +57,7 @@ private struct CommitRow: View {
                 Text(commit.summary)
                     .font(.system(size: 13, weight: .medium))
                     .lineLimit(1)
-                Text("\(commit.authorName) · \(commit.date, format: .relative(presentation: .named))")
+                Text("\(commit.authorName) · \(CommitDate.string(for: commit.date))")
                     .font(.system(size: 11))
                     .foregroundStyle(.secondary)
                     .lineLimit(1)
