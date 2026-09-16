@@ -1,7 +1,7 @@
 import GitCore
 import SwiftUI
 
-/// One row per commit on the current branch.
+/// One row per commit on any branch, with the lane graph drawn down the leading edge.
 struct HistoryList: View {
     @Bindable var store: RepositoryStore
     var focus: FocusState<RepositoryStore.Pane?>.Binding
@@ -9,9 +9,12 @@ struct HistoryList: View {
     var body: some View {
         List(selection: selection) {
             Section {
-                ForEach(store.history) { commit in
-                    CommitRow(commit: commit)
-                        .tag(commit.sha)
+                ForEach(store.history) { entry in
+                    CommitRow(entry: entry, laneCount: store.graphLaneCount)
+                        .tag(entry.commit.sha)
+                        // Zero vertical insets put rows exactly edge to edge, so lanes meet between rows.
+                        .listRowInsets(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8))
+                        .listRowSeparator(.hidden)
                 }
             } header: {
                 HStack(spacing: 8) {
@@ -19,7 +22,7 @@ struct HistoryList: View {
                         .font(.system(size: 11, weight: .semibold))
                         .foregroundStyle(.secondary)
                     Spacer()
-                    Text(store.history.count == 1 ? "1 commit" : "\(store.history.count) commits")
+                    Text("All branches · \(store.history.count)\(store.isHistoryTruncated ? "+" : "")")
                         .font(.system(size: 11))
                         .foregroundStyle(.tertiary)
                 }
@@ -32,7 +35,7 @@ struct HistoryList: View {
         .overlay {
             if store.history.isEmpty {
                 ContentUnavailableView("No commits yet", systemImage: "clock",
-                                       description: Text("Commits on this branch will appear here."))
+                                       description: Text("Commits on any branch will appear here."))
             }
         }
         .navigationSplitViewColumnWidth(min: 280, ideal: 326, max: 480)
@@ -45,29 +48,5 @@ struct HistoryList: View {
             store.requestFocus(.list)
             store.selectCommit(sha: $0)
         })
-    }
-}
-
-private struct CommitRow: View {
-    let commit: CommitSummary
-
-    var body: some View {
-        HStack(alignment: .top, spacing: 8) {
-            VStack(alignment: .leading, spacing: 2) {
-                Text(commit.summary)
-                    .font(.system(size: 13, weight: .medium))
-                    .lineLimit(1)
-                Text("\(commit.authorName) · \(commit.date, format: .relative(presentation: .named))")
-                    .font(.system(size: 11))
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
-            }
-            Spacer(minLength: 4)
-            Text(commit.shortSHA)
-                .font(.system(size: 11, design: .monospaced))
-                .foregroundStyle(.secondary)
-        }
-        .frame(height: 40)
-        .padding(.vertical, 2)
     }
 }

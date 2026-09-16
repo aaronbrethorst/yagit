@@ -33,7 +33,7 @@ import Testing
         #expect(remaining.hunks[0].lines.contains { $0.text == "inserted after 18" })
     }
 
-    @Test func historyIsNewestFirstAndPerBranch() async throws {
+    @Test func historyIsNewestFirstAcrossBranches() async throws {
         let fixture = try TestRepository()
         try fixture.write("a.txt", "1\n")
         try fixture.commitAll("First")
@@ -44,9 +44,9 @@ import Testing
         try fixture.commitAll("Third on feature")
 
         let repo = try GitRepository(url: fixture.url)
-        #expect(try await repo.history().map(\.summary) == ["Third on feature", "Second", "First"])
+        #expect(try await repo.history().map(\.commit.summary) == ["Third on feature", "Second", "First"])
         try await repo.switchBranch(named: "main")
-        #expect(try await repo.history().map(\.summary) == ["Second", "First"])
+        #expect(try await repo.history().map(\.commit.summary) == ["Third on feature", "Second", "First"])
     }
 
     @Test func commitDetailListsFilesWithCounts() async throws {
@@ -60,7 +60,7 @@ import Testing
         try fixture.commitAll("Second")
 
         let repo = try GitRepository(url: fixture.url)
-        let head = try #require(try await repo.history().first)
+        let head = try #require(try await repo.history().first).commit
         let detail = try await repo.commitDetail(sha: head.sha)
 
         #expect(detail.commit == head)
@@ -70,8 +70,29 @@ import Testing
         #expect(detail.files.map(\.deletions) == [0, 1, 0])
         #expect(detail.files[0].hunks[0].lines.map(\.text) == ["one", "two"])
 
-        let root = try #require(try await repo.history().last)
+        let root = try #require(try await repo.history().last).commit
         #expect(try await repo.commitDetail(sha: root.sha).files.map(\.path) == ["a.txt", "b.txt"])
+    }
+
+    @Test func commitSummariesCarryParentSHAs() async throws {
+        let fixture = try TestRepository()
+        try fixture.write("a.txt", "1\n")
+        try fixture.commitAll("First")
+        try fixture.git("checkout", "-q", "-b", "feature")
+        try fixture.write("b.txt", "b\n")
+        try fixture.commitAll("Feature")
+        try fixture.git("checkout", "-q", "main")
+        try fixture.write("c.txt", "c\n")
+        try fixture.commitAll("Main")
+        try fixture.git("merge", "-q", "--no-ff", "-m", "Merge feature", "feature")
+
+        let merge = try fixture.git("rev-parse", "HEAD").trimmingCharacters(in: .whitespacesAndNewlines)
+        let parents = try fixture.git("rev-parse", "HEAD^1", "HEAD^2").split(separator: "\n").map(String.init)
+        let root = try fixture.git("rev-list", "--max-parents=0", "HEAD").trimmingCharacters(in: .whitespacesAndNewlines)
+
+        let repo = try GitRepository(url: fixture.url)
+        #expect(try await repo.commitDetail(sha: merge).commit.parentSHAs == parents)
+        #expect(try await repo.commitDetail(sha: root).commit.parentSHAs.isEmpty)
     }
 
     @Test func emptyRepositoryHasNoHistory() async throws {

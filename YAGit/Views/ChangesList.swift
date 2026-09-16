@@ -8,12 +8,8 @@ struct ChangesList: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            if store.staged.isEmpty && store.unstaged.isEmpty {
-                ContentUnavailableView("No changes", systemImage: "checkmark.circle",
-                                       description: Text("The working tree is clean."))
-                    .frame(maxHeight: .infinity)
-            } else {
-                List(selection: selection) {
+            List(selection: selection) {
+                if !isClean {
                     Section {
                         ForEach(store.staged) { file in
                             FileRow(file: file, checkbox: store.isOnBothSides(file.path) ? .mixed : .on) {
@@ -37,24 +33,34 @@ struct ChangesList: View {
                                       checkbox: unstagedHeaderState) { store.toggleAll(side: .unstaged) }
                     }
                 }
-                .listStyle(.inset)
-                .scrollContentBackground(.hidden)
-                .paneFocus(focus, .list)
-                .claimsPaneFocus(store, .list)
-                // The Changes menu carries the same bare Space, but AppKit offers key equivalents
-                // to the focused view before the menu and the list swallows Space, so handle it
-                // here as well. Both paths run the same intent.
-                .onKeyPress(.space) {
-                    guard store.canToggleSelectedFile else { return .ignored }
-                    store.toggleSelectedFile()
-                    return .handled
+            }
+            .listStyle(.inset)
+            .scrollContentBackground(.hidden)
+            // The list stays in the tree even when it's empty so it can take focus at launch,
+            // before the first snapshot arrives; otherwise AppKit hands it to the commit message.
+            .overlay {
+                if isClean {
+                    ContentUnavailableView("No changes", systemImage: "checkmark.circle",
+                                           description: Text("The working tree is clean."))
                 }
+            }
+            .paneFocus(focus, .list)
+            .claimsPaneFocus(store, .list)
+            // The Changes menu carries the same bare Space, but AppKit offers key equivalents
+            // to the focused view before the menu and the list swallows Space, so handle it
+            // here as well. Both paths run the same intent.
+            .onKeyPress(.space) {
+                guard store.canToggleSelectedFile else { return .ignored }
+                store.toggleSelectedFile()
+                return .handled
             }
             Divider()
             CommitBox(store: store)
         }
         .navigationSplitViewColumnWidth(min: 280, ideal: 326, max: 480)
     }
+
+    private var isClean: Bool { store.staged.isEmpty && store.unstaged.isEmpty }
 
     private var selection: Binding<ChangedFile.ID?> {
         Binding(get: { store.selectedChangeID }, set: {

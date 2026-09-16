@@ -140,14 +140,18 @@ public struct CommitSummary: Sendable, Hashable, Identifiable {
     public let authorName: String
     public let authorEmail: String
     public let date: Date
+    /// Parent commits in libgit2 order: the first parent first, empty for a root commit.
+    public let parentSHAs: [String]
 
-    public init(sha: String, summary: String, message: String, authorName: String, authorEmail: String, date: Date) {
+    public init(sha: String, summary: String, message: String, authorName: String, authorEmail: String, date: Date,
+                parentSHAs: [String] = []) {
         self.sha = sha
         self.summary = summary
         self.message = message
         self.authorName = authorName
         self.authorEmail = authorEmail
         self.date = date
+        self.parentSHAs = parentSHAs
     }
 
     public var id: String { sha }
@@ -162,6 +166,88 @@ public struct CommitDetail: Sendable, Hashable {
         self.commit = commit
         self.files = files
     }
+}
+
+/// A piece of lane line within half a row: from a column at one edge of the half to a column at the
+/// other. Equal columns draw a straight line; different columns draw a curve.
+public struct GraphSegment: Sendable, Hashable {
+    public let fromColumn: Int
+    public let toColumn: Int
+    public let colorIndex: Int
+
+    public init(fromColumn: Int, toColumn: Int, colorIndex: Int) {
+        self.fromColumn = fromColumn
+        self.toColumn = toColumn
+        self.colorIndex = colorIndex
+    }
+}
+
+/// One commit's slice of the lane graph. `upper` runs from the row's top edge to the dot's center,
+/// `lower` from the dot's center to the bottom edge.
+public struct GraphRow: Sendable, Hashable {
+    public let column: Int
+    public let colorIndex: Int
+    public let isMerge: Bool
+    public let upper: [GraphSegment]
+    public let lower: [GraphSegment]
+
+    public init(column: Int, colorIndex: Int, isMerge: Bool, upper: [GraphSegment], lower: [GraphSegment]) {
+        self.column = column
+        self.colorIndex = colorIndex
+        self.isMerge = isMerge
+        self.upper = upper
+        self.lower = lower
+    }
+}
+
+/// A ref shown as a badge on the commit it points to.
+public struct RefLabel: Sendable, Hashable {
+    public enum Kind: Sendable, Hashable {
+        /// HEAD, only when detached.
+        case head
+        case localBranch(isCurrent: Bool)
+        case remoteBranch
+        case tag
+    }
+
+    /// Short name: `main`, `origin/main`, `v2.8.1`, `HEAD`.
+    public let name: String
+    public let kind: Kind
+
+    public init(name: String, kind: Kind) {
+        self.name = name
+        self.kind = kind
+    }
+
+    /// Badge order within one commit: detached HEAD, current branch, other local branches, remotes, tags.
+    static func displayOrder(_ lhs: RefLabel, _ rhs: RefLabel) -> Bool {
+        lhs.rank != rhs.rank ? lhs.rank < rhs.rank : lhs.name.localizedStandardCompare(rhs.name) == .orderedAscending
+    }
+
+    private var rank: Int {
+        switch kind {
+        case .head: 0
+        case .localBranch(isCurrent: true): 1
+        case .localBranch: 2
+        case .remoteBranch: 3
+        case .tag: 4
+        }
+    }
+}
+
+/// One row of the History list.
+public struct HistoryEntry: Sendable, Hashable, Identifiable {
+    public let commit: CommitSummary
+    public let refs: [RefLabel]
+    public let graph: GraphRow
+
+    public init(commit: CommitSummary, refs: [RefLabel], graph: GraphRow) {
+        self.commit = commit
+        self.refs = refs
+        self.graph = graph
+    }
+
+    public var id: String { commit.sha }
 }
 
 public struct RepositorySnapshot: Sendable, Hashable {

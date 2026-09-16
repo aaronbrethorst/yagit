@@ -29,23 +29,6 @@ extension GitRepository {
         return try commitSummary(oid: oid)
     }
 
-    /// Commits reachable from HEAD, newest first.
-    public func history(limit: Int = 2000) throws -> [CommitSummary] {
-        guard git_repository_head_unborn(repo) == 0 else { return [] }
-        var walker: OpaquePointer?
-        try check(git_revwalk_new(&walker, repo), "log")
-        defer { git_revwalk_free(walker) }
-        git_revwalk_sorting(walker, GIT_SORT_TOPOLOGICAL.rawValue | GIT_SORT_TIME.rawValue)
-        try check(git_revwalk_push_head(walker), "log")
-
-        var commits: [CommitSummary] = []
-        var oid = git_oid()
-        while commits.count < limit, git_revwalk_next(&oid, walker) == 0 {
-            commits.append(try commitSummary(oid: oid))
-        }
-        return commits
-    }
-
     /// A commit and the diff against its first parent (or against nothing for a root commit).
     public func commitDetail(sha: String) throws -> CommitDetail {
         var oid = git_oid()
@@ -96,6 +79,7 @@ extension CommitSummary {
             message: String(cString: git_commit_message(commit)),
             authorName: String(cString: author.name),
             authorEmail: String(cString: author.email),
-            date: Date(timeIntervalSince1970: TimeInterval(git_commit_time(commit))))
+            date: Date(timeIntervalSince1970: TimeInterval(git_commit_time(commit))),
+            parentSHAs: (0..<git_commit_parentcount(commit)).map { String(oid: git_commit_parent_id(commit, $0)!.pointee) })
     }
 }

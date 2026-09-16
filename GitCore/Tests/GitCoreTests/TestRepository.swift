@@ -42,6 +42,12 @@ final class TestRepository {
         try git("commit", "-q", "-m", message)
     }
 
+    /// Commits with author and committer dates pinned, so walk order doesn't depend on timing.
+    func commitAll(_ message: String, date: Date) throws {
+        try git("add", "-A")
+        try git(date: date, "commit", "-q", "-m", message)
+    }
+
     /// Adds a bare `origin` remote, pushes `main` and sets it as upstream.
     func addOrigin() throws {
         let remote = url.deletingLastPathComponent().appendingPathComponent("origin.git")
@@ -68,8 +74,17 @@ final class TestRepository {
         try run("/usr/bin/git", arguments, in: url)
     }
 
+    /// Runs git with author and committer dates pinned (for commits and merges in order-sensitive tests).
     @discardableResult
-    private func run(_ executable: String, _ arguments: [String], in directory: URL) throws -> String {
+    func git(date: Date, _ arguments: String...) throws -> String {
+        let stamp = "\(Int(date.timeIntervalSince1970)) +0000"
+        return try run("/usr/bin/git", arguments, in: url,
+                       extraEnvironment: ["GIT_AUTHOR_DATE": stamp, "GIT_COMMITTER_DATE": stamp])
+    }
+
+    @discardableResult
+    private func run(_ executable: String, _ arguments: [String], in directory: URL,
+                     extraEnvironment: [String: String] = [:]) throws -> String {
         let process = Process()
         process.executableURL = URL(fileURLWithPath: executable)
         process.arguments = arguments
@@ -77,6 +92,7 @@ final class TestRepository {
         var environment = ProcessInfo.processInfo.environment
         environment["GIT_CONFIG_NOSYSTEM"] = "1"
         environment["HOME"] = directory.deletingLastPathComponent().path
+        environment.merge(extraEnvironment) { _, new in new }
         process.environment = environment
         let output = Pipe()
         process.standardOutput = output

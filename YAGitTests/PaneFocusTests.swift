@@ -35,7 +35,7 @@ struct PaneFocusTests {
         // History adds the commit-files column; focus must be able to reach it.
         store.mode = .history
         try await settle(window)
-        store.selectCommit(sha: store.history[0].sha)
+        store.selectCommit(sha: store.history[0].commit.sha)
         try await settle(window)
         store.focusedPane = .commitFiles
         try await settle(window)
@@ -53,7 +53,7 @@ struct PaneFocusTests {
 
         store.mode = .history
         try await settle(window)
-        store.selectCommit(sha: store.history[0].sha)
+        store.selectCommit(sha: store.history[0].commit.sha)
         try await settle(window)
         store.focusedPane = .commitFiles
         try await settle(window)
@@ -75,9 +75,26 @@ struct PaneFocusTests {
         window.close()
     }
 
+    /// At launch the window opens before the first snapshot loads, so the list isn't in the tree
+    /// yet. Focus must still land on it once it arrives, not on the commit message editor.
+    @Test func launchFocusesTheListNotTheCommitMessage() async throws {
+        let store = try await makeStore(loaded: false)
+        let window = makeWindow(store)
+        try await settle(window)
+        #expect(!(window.firstResponder is NSTextView))
+
+        await store.load()
+        try await settle(window)
+        #expect(!(window.firstResponder is NSTextView))
+        #expect(!store.isEditingCommitMessage)
+        #expect(focusedTableWidth(window) == changesListWidth)
+
+        window.close()
+    }
+
     // MARK: - Helpers
 
-    private func makeStore() async throws -> RepositoryStore {
+    private func makeStore(loaded: Bool = true) async throws -> RepositoryStore {
         let fixture = try TestRepository()
         try fixture.git("config", "user.name", "Aaron Brethorst")
         try fixture.git("config", "user.email", "aaron@onebusaway.org")
@@ -88,7 +105,7 @@ struct PaneFocusTests {
         try fixture.write("README.md", "# Demo changed\n")
         try fixture.write("Other.swift", "let x = 1\n")
         let store = try RepositoryStore(url: fixture.url)
-        await store.load()
+        if loaded { await store.load() }
         return store
     }
 

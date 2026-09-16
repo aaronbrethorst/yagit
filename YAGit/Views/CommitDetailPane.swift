@@ -13,7 +13,7 @@ struct CommitDetailPane: View {
                     Text(commit.summary)
                         .font(.system(size: 15, weight: .semibold))
                         .lineLimit(2)
-                    Text("\(commit.shortSHA) · \(commit.authorName) · \(commit.date, format: .relative(presentation: .named))")
+                    Text("\(commit.shortSHA) · \(commit.authorName) · \(CommitDate.string(for: commit.date))")
                         .font(.system(size: 11))
                         .foregroundStyle(.secondary)
                 }

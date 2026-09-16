@@ -50,7 +50,7 @@ struct RepositoryStoreTests {
         #expect(store.changedFileCount == 4)
         #expect(store.selectedChange?.path == "Sources/App/Legacy.swift")
         #expect(store.currentDiff?.status == .deleted)
-        #expect(store.history.map(\.summary) == ["Bump model version", "Initial commit"])
+        #expect(store.history.map(\.commit.summary) == ["Bump model version", "Initial commit"])
         #expect(store.snapshot?.author == Author(name: "Aaron Brethorst", email: "aaron@onebusaway.org"))
     }
 
@@ -78,7 +78,7 @@ struct RepositoryStoreTests {
         #expect(store.statusText.hasPrefix("Committed "))
         #expect(store.statusText.hasSuffix(" to feature/trip-planner"))
         #expect(store.commitMessage.isEmpty)
-        #expect(store.history.first?.summary == "Wire up the planner")
+        #expect(store.history.first?.commit.summary == "Wire up the planner")
         #expect(store.staged.isEmpty)
         #expect(store.unstaged.map(\.path) == [
             "Sources/App/Legacy.swift", "Sources/App/TripPlanner.swift", "Sources/App/TripViewController.swift",
@@ -102,14 +102,48 @@ struct RepositoryStoreTests {
         #expect(store.currentBranch == "main")
         #expect(store.statusText == "Switched to branch ‘main’")
         #expect(store.snapshot?.current?.ahead == 1)
-        #expect(store.history.map(\.summary) == ["Bump model version", "Initial commit"])
+        #expect(store.history.map(\.commit.summary) == ["Bump model version", "Initial commit"])
 
+        try fixture.commitOnOrigin("Remote work")
         store.fetch()
         #expect(store.isFetching)
         #expect(store.statusText == "Fetching origin…")
         try await settle()
         #expect(store.isFetching == false)
+        #expect(store.statusText == "Fetched origin — remote branches updated")
+        #expect(store.history.map(\.commit.summary).contains("Remote work"))
+
+        store.fetch()
+        try await settle()
         #expect(store.statusText == "Fetched origin — already up to date")
+    }
+
+    @Test func commitSelectionSurvivesABranchSwitchAndClearsWhenItsCommitDisappears() async throws {
+        let fixture = try makeFixture()
+        let spike = try fixture.git("commit-tree", "HEAD^{tree}", "-p", "HEAD", "-m", "Spike")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        try fixture.git("branch", "spike", spike)
+        let store = try RepositoryStore(url: fixture.url)
+        await store.load()
+        #expect(store.history.map(\.commit.summary).contains("Spike"))
+
+        store.mode = .history
+        store.selectCommit(sha: spike)
+        try await settle()
+        #expect(store.commitDetail?.commit.sha == spike)
+
+        store.switchBranch(named: "main")
+        try await settle()
+        #expect(store.currentBranch == "main")
+        #expect(store.selectedCommitSHA == spike)
+        #expect(store.commitDetail?.commit.sha == spike)
+
+        try fixture.git("branch", "-D", "spike")
+        await store.load()
+        #expect(!store.history.contains { $0.commit.sha == spike })
+        #expect(store.selectedCommitSHA == nil)
+        #expect(store.commitDetail == nil)
+        #expect(store.selectedCommitFile == nil)
     }
 
     /// Renders the real window offscreen so the layout can be reviewed without screen recording.
@@ -138,7 +172,7 @@ struct RepositoryStoreTests {
         try snapshot(window, to: directory.appendingPathComponent("changes-split.png"))
 
         store.mode = .history
-        store.selectCommit(sha: store.history[0].sha)
+        store.selectCommit(sha: store.history[0].commit.sha)
         try await settle()
         try snapshot(window, to: directory.appendingPathComponent("history.png"))
 
@@ -161,7 +195,7 @@ struct RepositoryStoreTests {
         let store = try RepositoryStore(url: fixture.url)
         await store.load()
         store.mode = .history
-        store.selectCommit(sha: store.history[0].sha)
+        store.selectCommit(sha: store.history[0].commit.sha)
 
         let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 1100, height: 700),
                               styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)
@@ -190,7 +224,7 @@ struct RepositoryStoreTests {
         let store = try RepositoryStore(url: fixture.url)
         await store.load()
         store.mode = .history
-        store.selectCommit(sha: store.history[0].sha)
+        store.selectCommit(sha: store.history[0].commit.sha)
 
         let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 1100, height: 700),
                               styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)
