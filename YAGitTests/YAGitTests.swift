@@ -112,6 +112,10 @@ struct RepositoryStoreTests {
         #expect(store.isFetching == false)
         #expect(store.statusText == "Fetched origin — remote branches updated")
         #expect(store.history.map(\.commit.summary).contains("Remote work"))
+
+        store.fetch()
+        try await settle()
+        #expect(store.statusText == "Fetched origin — already up to date")
     }
 
     @Test func commitSelectionSurvivesABranchSwitchAndClearsWhenItsCommitDisappears() async throws {
