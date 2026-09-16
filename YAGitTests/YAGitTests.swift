@@ -151,7 +151,7 @@ struct RepositoryStoreTests {
         print("Screenshots written to \(directory.path)")
     }
 
-    /// A commit touching many files wraps its chips onto many rows; that must not grow the window.
+    /// A commit touching many files scrolls inside the Files column; that must not grow the window.
     @Test func manyFileCommitDoesNotOverflowWindow() async throws {
         let fixture = try makeFixture()
         for i in 1...40 {

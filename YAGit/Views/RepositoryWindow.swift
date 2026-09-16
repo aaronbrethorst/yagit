@@ -57,8 +57,16 @@ struct RepositoryContent: View {
             }
         } detail: {
             switch store.mode {
-            case .changes: DiffPane(store: store)
-            case .history: CommitDetailPane(store: store)
+            case .changes:
+                DiffPane(store: store)
+            case .history:
+                // Files get their own column so a large commit lists cleanly instead of wrapping into chips.
+                HSplitView {
+                    CommitFilesList(store: store)
+                        .frame(minWidth: 180, idealWidth: 216, maxWidth: 360)
+                    CommitDetailPane(store: store)
+                        .frame(minWidth: 320, maxWidth: .infinity)
+                }
             }
         }
         .navigationSplitViewStyle(.balanced)

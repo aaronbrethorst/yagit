@@ -103,6 +103,9 @@ public struct FileDiff: Sendable, Hashable, Identifiable {
 
     public var id: String { path }
     public var fileName: String { (path as NSString).lastPathComponent }
+
+    /// Directory portion of the path, empty for files at the repository root.
+    public var directory: String { (path as NSString).deletingLastPathComponent }
 }
 
 public struct BranchInfo: Sendable, Hashable, Identifiable {

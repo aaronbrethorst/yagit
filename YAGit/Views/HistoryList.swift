@@ -13,10 +13,17 @@ struct HistoryList: View {
                         .tag(commit.sha)
                 }
             } header: {
-                Text("\(store.history.count) commits")
-                    .font(.system(size: 11, weight: .semibold))
-                    .foregroundStyle(.secondary)
-                    .textCase(nil)
+                HStack(spacing: 8) {
+                    Text("History")
+                        .font(.system(size: 11, weight: .semibold))
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    Text(store.history.count == 1 ? "1 commit" : "\(store.history.count) commits")
+                        .font(.system(size: 11))
+                        .foregroundStyle(.tertiary)
+                }
+                .textCase(nil)
+                .padding(.vertical, 2)
             }
         }
         .listStyle(.inset)
