@@ -95,7 +95,7 @@ struct CappedWidth: Layout {
     }
 
     func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
-        subviews.first?.place(at: bounds.origin, proposal: ProposedViewSize(bounds.size))
+        subviews.first?.place(at: bounds.origin, proposal: capped(ProposedViewSize(bounds.size)))
     }
 
     private func capped(_ proposal: ProposedViewSize) -> ProposedViewSize {
