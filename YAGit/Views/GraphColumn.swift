@@ -16,9 +16,8 @@ struct GraphColumn: View {
         let selected = prominence == .increased
         let row = self.row
         let laneCount = self.laneCount
-        let laneSpacing = Self.laneSpacing
         Canvas { context, size in
-            func x(_ column: Int) -> CGFloat { 9 + laneSpacing * CGFloat(column) }
+            func x(_ column: Int) -> CGFloat { 9 + Self.laneSpacing * CGFloat(column) }
             let midY = size.height / 2
 
             func draw(_ segment: GraphSegment, from top: CGFloat, to bottom: CGFloat) {
