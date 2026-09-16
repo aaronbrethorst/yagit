@@ -30,10 +30,16 @@ struct CommitRow: View {
                         .font(.system(size: 13, weight: .medium))
                         .lineLimit(1)
                 }
-                Text("\(commit.shortSHA) · \(commit.authorName) · \(CommitDate.string(for: commit.date))")
-                    .font(.system(size: 11))
-                    .foregroundStyle(.secondary)
-                    .lineLimit(1)
+                // The date outranks the author, so a long name truncates before the time does.
+                HStack(spacing: 0) {
+                    Text("\(commit.shortSHA) · ")
+                    Text(commit.authorName)
+                    Text(" · \(CommitDate.string(for: commit.date))")
+                        .layoutPriority(1)
+                }
+                .font(.system(size: 11))
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
             }
             Spacer(minLength: 0)
         }
