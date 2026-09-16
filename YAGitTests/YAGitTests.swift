@@ -104,12 +104,42 @@ struct RepositoryStoreTests {
         #expect(store.snapshot?.current?.ahead == 1)
         #expect(store.history.map(\.commit.summary) == ["Bump model version", "Initial commit"])
 
+        try fixture.commitOnOrigin("Remote work")
         store.fetch()
         #expect(store.isFetching)
         #expect(store.statusText == "Fetching origin…")
         try await settle()
         #expect(store.isFetching == false)
-        #expect(store.statusText == "Fetched origin — already up to date")
+        #expect(store.statusText == "Fetched origin — remote branches updated")
+        #expect(store.history.map(\.commit.summary).contains("Remote work"))
+    }
+
+    @Test func commitSelectionSurvivesABranchSwitchAndClearsWhenItsCommitDisappears() async throws {
+        let fixture = try makeFixture()
+        let spike = try fixture.git("commit-tree", "HEAD^{tree}", "-p", "HEAD", "-m", "Spike")
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        try fixture.git("branch", "spike", spike)
+        let store = try RepositoryStore(url: fixture.url)
+        await store.load()
+        #expect(store.history.map(\.commit.summary).contains("Spike"))
+
+        store.mode = .history
+        store.selectCommit(sha: spike)
+        try await settle()
+        #expect(store.commitDetail?.commit.sha == spike)
+
+        store.switchBranch(named: "main")
+        try await settle()
+        #expect(store.currentBranch == "main")
+        #expect(store.selectedCommitSHA == spike)
+        #expect(store.commitDetail?.commit.sha == spike)
+
+        try fixture.git("branch", "-D", "spike")
+        await store.load()
+        #expect(!store.history.contains { $0.commit.sha == spike })
+        #expect(store.selectedCommitSHA == nil)
+        #expect(store.commitDetail == nil)
+        #expect(store.selectedCommitFile == nil)
     }
 
     /// Renders the real window offscreen so the layout can be reviewed without screen recording.

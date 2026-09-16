@@ -40,6 +40,11 @@ final class RepositoryStore {
 
     // History mode
     var history: [HistoryEntry] = []
+    /// Graph width in lanes, shared by every row so their text lines up. Capped at `maxGraphLanes`.
+    private(set) var graphLaneCount = 0
+    /// The walk hit `GitRepository.historyLimit`, so older commits aren't listed.
+    private(set) var isHistoryTruncated = false
+    static let maxGraphLanes = 8
     var selectedCommitSHA: String?
     var commitDetail: CommitDetail?
     var selectedCommitFile: String?
@@ -121,7 +126,23 @@ final class RepositoryStore {
             history = try await repository.history()
         } catch {
             report("Couldn't read history", error)
+            return
         }
+        graphLaneCount = Self.laneCount(for: history)
+        isHistoryTruncated = history.count == GitRepository.historyLimit
+        // Keep the selected commit through reloads; drop it only when it's no longer reachable.
+        if let sha = selectedCommitSHA, !history.contains(where: { $0.commit.sha == sha }) {
+            selectedCommitSHA = nil
+            commitDetail = nil
+            selectedCommitFile = nil
+        }
+    }
+
+    static func laneCount(for history: [HistoryEntry]) -> Int {
+        let widest = history.map { entry in
+            (entry.graph.upper + entry.graph.lower).reduce(entry.graph.column) { max($0, $1.fromColumn, $1.toColumn) }
+        }.max()
+        return widest.map { min(maxGraphLanes, $0 + 1) } ?? 0
     }
 
     private func reloadDiff() async {
@@ -256,8 +277,6 @@ final class RepositoryStore {
         Task {
             do {
                 try await repository.switchBranch(named: name)
-                selectedCommitSHA = nil
-                commitDetail = nil
                 await refresh()
                 await reloadHistory()
                 statusText = "Switched to branch ‘\(name)’"
@@ -272,8 +291,6 @@ final class RepositoryStore {
         let name = name.trimmingCharacters(in: .whitespaces)
         do {
             try await repository.createBranch(named: name)
-            selectedCommitSHA = nil
-            commitDetail = nil
             await refresh()
             await reloadHistory()
             statusText = "Created branch ‘\(name)’"
@@ -292,6 +309,7 @@ final class RepositoryStore {
             do {
                 let result = try await repository.fetch()
                 await refresh()
+                await reloadHistory()
                 switch result {
                 case .upToDate: statusText = "Fetched origin — already up to date"
                 case .updated: statusText = "Fetched origin — remote branches updated"
