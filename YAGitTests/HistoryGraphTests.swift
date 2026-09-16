@@ -89,3 +89,33 @@ struct GraphPaletteTests {
         #expect(GraphColumn.width(laneCount: 8) == 88)
     }
 }
+
+@MainActor
+struct CommitRowTests {
+    private func entry(isMerge: Bool, refs: [RefLabel]) -> HistoryEntry {
+        let commit = CommitSummary(sha: "cfa7deb0000", summary: "Merge pull request #418", message: "Merge pull request #418",
+                                   authorName: "Aaron Brethorst", authorEmail: "aaron@example.com",
+                                   date: utcDate(2026, 9, 16, 8, 14), parentSHAs: isMerge ? ["a", "b"] : ["a"])
+        return HistoryEntry(commit: commit, refs: refs,
+                            graph: GraphRow(column: 0, colorIndex: 0, isMerge: isMerge, upper: [], lower: []))
+    }
+
+    @Test func accessibilityLabelNamesMergeAndEveryRef() {
+        let refs = [
+            RefLabel(name: "main", kind: .localBranch(isCurrent: true)),
+            RefLabel(name: "origin/main", kind: .remoteBranch),
+            RefLabel(name: "v2.7.1", kind: .tag),
+            RefLabel(name: "v2.7.1-rc1", kind: .tag),
+        ]
+        let label = CommitRow.accessibilityLabel(for: entry(isMerge: true, refs: refs),
+                                                 now: CommitDateTests.now, calendar: utcCalendar("en_US"))
+        #expect(plainSpaces(label) ==
+                "Merge pull request #418, merge commit, on main, origin/main, v2.7.1, v2.7.1-rc1, Aaron Brethorst, Today at 8:14 AM")
+    }
+
+    @Test func accessibilityLabelOmitsEmptyParts() {
+        let label = CommitRow.accessibilityLabel(for: entry(isMerge: false, refs: []),
+                                                 now: CommitDateTests.now, calendar: utcCalendar("en_US"))
+        #expect(plainSpaces(label) == "Merge pull request #418, Aaron Brethorst, Today at 8:14 AM")
+    }
+}
