@@ -29,7 +29,10 @@ extension GitRepository {
 
         var commits: [CommitSummary] = []
         var oid = git_oid()
-        while commits.count < limit, git_revwalk_next(&oid, walker) == 0 {
+        while commits.count < limit {
+            let status = git_revwalk_next(&oid, walker)
+            if status == GIT_ITEROVER.rawValue { break }
+            try check(status, "log")
             commits.append(try commitSummary(oid: oid))
         }
         let rows = GraphLayout.rows(for: commits, mainlineTip: mainlineTip())

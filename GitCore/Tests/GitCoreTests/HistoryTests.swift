@@ -190,4 +190,20 @@ import Testing
         let history = try await GitRepository(url: fixture.url).history(limit: 2)
         #expect(history.map(\.commit.summary) == ["Third", "Second"])
     }
+
+    /// A walk that fails partway (here, a parent commit missing from the object database) must
+    /// report the failure rather than end history early.
+    @Test func walkErrorsThrow() async throws {
+        let fixture = try TestRepository()
+        for (index, name) in ["First", "Second"].enumerated() {
+            try fixture.write("a.txt", "\(index)\n")
+            try fixture.commitAll(name, date: minute(index))
+        }
+        let parent = try sha(fixture, "HEAD^")
+        let object = fixture.url.appendingPathComponent(".git/objects/\(parent.prefix(2))/\(parent.dropFirst(2))")
+        try FileManager.default.removeItem(at: object)
+
+        let repository = try GitRepository(url: fixture.url)
+        await #expect(throws: GitError.self) { try await repository.history() }
+    }
 }
