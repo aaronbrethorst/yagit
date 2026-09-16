@@ -111,8 +111,14 @@ unbounded; the app maps them onto its palette (§3), and 0 is only ever the main
 
    Segment color for rules 2 and 3: C's color when i == 0 (a branch's own line stays its color
    until it joins), otherwise the joined slot's color. Rule 5 uses the new lane's color.
-4. *Trim.* Drop trailing nil slots.
-5. Emit `GraphRow(column, colorIndex, isMerge: parentSHAs.count > 1, upper, lower)`.
+4. *Pack.* Visit the non-nil slots in ascending index order. For each slot `k`, find the leftmost
+   nil slot `j` with `firstFree ≤ j < k`, where `firstFree` is 1 when the mainline set is
+   non-empty and 0 otherwise. If there is one, move the lane from `k` to `j`, set slot `k` to nil,
+   and rewrite every lower-half segment with `toColumn == k` to end at `j` (the straight
+   pass-through `k → k` and any edge from C's dot that ended at `k`). Lanes keep their relative
+   order, so packing never makes two lanes cross. C's dot and the tops of its segments don't move.
+5. *Trim.* Drop trailing nil slots.
+6. Emit `GraphRow(column, colorIndex, isMerge: parentSHAs.count > 1, upper, lower)`.
 
 A parent that never appears (beyond `limit`, or a shallow-clone boundary) keeps its slot to the
 end, so its lane runs straight off the bottom of the last row. A root commit emits no lower-half
@@ -129,6 +135,9 @@ segments from its dot.
   intervening mainline commits never look like its ancestors.
 - Two branches off the same parent share a lane from the second branch's dot down.
 - An octopus merge opens one new lane per extra parent that no slot already targets.
+- When a lane closes, the lanes to its right curve left to fill the gap in the lower half of
+  that row, as `git log --graph` collapses lanes. A side lane never takes column 0 while there
+  is a mainline, and lanes never cross.
 
 The mockup places `fix/arrival-sort` in column 3 and `release/2.9` in column 2; this algorithm
 packs them into column 1. Otherwise it reproduces the mockup's lanes.
@@ -197,7 +206,8 @@ drawing stays inside it.
   selected or not), restore `.normal`, then stroke a 6.5pt-diameter ring at 1.5pt (outer edge
   8pt). No background color is assumed.
 - Overflow: segments with either end at column ≥ `laneCount` and dots at column ≥ `laneCount`
-  are skipped. Such commits show no dot; this only happens past 8 concurrent lanes.
+  are skipped. Such commits show no dot. Packing (§2) keeps lanes left, so this only happens
+  past 8 concurrent lanes.
 
 ### Lane palette (`GraphPalette`)
 
@@ -301,6 +311,9 @@ cases share a shape:
   rows, upper `k → 0` at the parent in the side lane's color.
 - Two tips sharing a parent: the second tip's lower segment curves into the first's slot.
 - Column reuse: after a lane closes, the next new tip takes the freed column.
+- Packing: a lane right of a closed lane curves left into the freed column in that row's lower
+  half; it never packs into an empty column 0 while there is a mainline; without a mainline it
+  does.
 - Parent absent from the list: its slot still appears in the last row's lower half.
 - `mainlineTip` nil, or not in the list: column 0 is used by ordinary tips.
 - Colors: mainline always 0; indices 1, 2, 3, … are handed out in the order new tips appear and
@@ -347,7 +360,8 @@ cases share a shape:
   `CommitSummary` construction. Pushing all branches and tags adds to that up-front cost; it runs
   on the `GitRepository` actor, off the main thread. The manual timing check above decides
   whether this needs follow-up.
-- **Wide graphs.** Past 8 concurrent lanes, overflow lanes and their dots are skipped rather than
+- **Wide graphs.** Packing (§2) keeps open lanes in the leftmost free columns, so skipping only
+  happens past 8 concurrent lanes. There, overflow lanes and their dots are skipped rather than
   widening the pane.
 - **Walk-order ties.** Equal committer timestamps can reorder commits, which changes the layout
   between reloads in rare cases. Accepted; tests pin dates.

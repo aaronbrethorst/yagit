@@ -53,8 +53,9 @@ private func row(_ column: Int, _ color: Int, merge: Bool = false, _ upper: [Gra
     @Test func octopusMergeOpensOneLanePerExtraParent() {
         let rows = GraphLayout.rows(for: [c("M", "A", "S1", "S2"), c("S1", "A"), c("S2", "A"), c("A")], mainlineTip: "M")
         #expect(rows[0] == row(0, 0, merge: true, [], [s(0, 0, 0), s(0, 1, 1), s(0, 2, 2)]))
-        #expect(rows[1].column == 1)
-        #expect(rows[2].column == 2)
+        // S1's lane closes into the mainline, so S2's lane packs left from column 2 to 1 below S1.
+        #expect(rows[1] == row(1, 1, [s(0, 0, 0), s(1, 1, 1), s(2, 2, 2)], [s(0, 0, 0), s(2, 1, 2), s(1, 0, 1)]))
+        #expect(rows[2] == row(1, 2, [s(0, 0, 0), s(1, 1, 2)], [s(0, 0, 0), s(1, 0, 2)]))
         #expect(rows[3] == row(0, 0, [s(0, 0, 0)], []))
     }
 
@@ -98,6 +99,38 @@ private func row(_ column: Int, _ color: Int, merge: Bool = false, _ upper: [Gra
         #expect(rows[2].upper == [s(0, 0, 0), s(1, 0, 1)])
         #expect(rows[3].column == 1)
         #expect(rows[3].colorIndex == 2)
+    }
+
+    @Test func aLaneShiftsLeftAfterALaneToItsLeftCloses() {
+        let rows = GraphLayout.rows(for: [c("S1", "A"), c("S2", "B"), c("M", "A"), c("A", "B"), c("B")], mainlineTip: "M")
+        #expect(rows == [
+            row(1, 1, [], [s(1, 1, 1)]),
+            row(2, 2, [s(1, 1, 1)], [s(1, 1, 1), s(2, 2, 2)]),
+            row(0, 0, [s(1, 1, 1), s(2, 2, 2)], [s(1, 1, 1), s(2, 2, 2), s(0, 0, 0)]),
+            row(0, 0, [s(0, 0, 0), s(1, 0, 1), s(2, 2, 2)], [s(2, 1, 2), s(0, 0, 0)]),
+            row(0, 0, [s(0, 0, 0), s(1, 0, 2)], []),
+        ])
+    }
+
+    @Test func packingLeavesAnEmptyMainlineColumnAlone() {
+        let rows = GraphLayout.rows(for: [c("S1", "A"), c("S2", "B"), c("A"), c("M", "B"), c("B")], mainlineTip: "M")
+        #expect(rows == [
+            row(1, 1, [], [s(1, 1, 1)]),
+            row(2, 2, [s(1, 1, 1)], [s(1, 1, 1), s(2, 2, 2)]),
+            row(1, 1, [s(1, 1, 1), s(2, 2, 2)], [s(2, 1, 2)]),
+            row(0, 0, [s(1, 1, 2)], [s(1, 1, 2), s(0, 0, 0)]),
+            row(0, 0, [s(0, 0, 0), s(1, 0, 2)], []),
+        ])
+    }
+
+    @Test func withoutAMainlineLanesPackIntoColumnZero() {
+        let rows = GraphLayout.rows(for: [c("T1", "P1"), c("T2", "P2"), c("P1"), c("P2")], mainlineTip: nil)
+        #expect(rows == [
+            row(0, 1, [], [s(0, 0, 1)]),
+            row(1, 2, [s(0, 0, 1)], [s(0, 0, 1), s(1, 1, 2)]),
+            row(0, 1, [s(0, 0, 1), s(1, 1, 2)], [s(1, 0, 2)]),
+            row(0, 2, [s(0, 0, 2)], []),
+        ])
     }
 
     @Test func aParentBeyondTheListRunsOffTheBottom() {

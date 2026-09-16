@@ -5,7 +5,8 @@ import Foundation
 /// The mainline, the first-parent chain from `mainlineTip`, always sits in column 0. Every other
 /// lane is an edge travelling down a column toward the parent it is waiting for; lanes waiting for
 /// the same parent meet at that parent's dot. Color 0 is reserved for the mainline; other lanes get
-/// 1, 2, 3, … in the order they appear.
+/// 1, 2, 3, … in the order they appear. At the bottom of each row, open lanes pack left into
+/// columns that have freed up (never column 0 while there is a mainline), keeping their order.
 public enum GraphLayout {
     private struct Lane {
         let target: String
@@ -94,6 +95,24 @@ public enum GraphLayout {
                     let laneColor = takeColor()
                     slots[index] = Lane(target: parent, colorIndex: laneColor)
                     lower.append(GraphSegment(fromColumn: column, toColumn: index, colorIndex: laneColor))
+                }
+            }
+
+            // Pack open lanes left into columns freed above them, keeping their order so lanes never
+            // cross. The dot stays put; only the bottom ends of this row's lower segments move.
+            var emptyColumns: [Int] = []
+            for index in slots.indices where index >= firstFree {
+                guard let lane = slots[index] else {
+                    emptyColumns.append(index)
+                    continue
+                }
+                guard !emptyColumns.isEmpty else { continue }
+                let target = emptyColumns.removeFirst()
+                slots[target] = lane
+                slots[index] = nil
+                emptyColumns.append(index)
+                for i in lower.indices where lower[i].toColumn == index {
+                    lower[i] = GraphSegment(fromColumn: lower[i].fromColumn, toColumn: target, colorIndex: lower[i].colorIndex)
                 }
             }
 

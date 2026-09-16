@@ -2012,6 +2012,7 @@ Fill in during Task 8:
 
 - `app-modules` timing: 65–74 ms over three runs (5,055 commits and 201 tags in the repo; 2,000 entries returned, 12 raw lanes). Debug build via `swift test`, Apple M4, 2026-09-16.
 - `ios` timing: 69–81 ms over three runs (3,575 commits and 34 tags; 2,000 entries returned, 32 raw lanes). Both are well under the 1 s follow-up threshold. The raw lane counts exceed the 8-lane cap, so on these repos some side lanes and their dots are skipped (the accepted §5 wide-graph risk).
+- Lane packing (final-review fix wave), measured on `ios`'s 2,000 history rows with a throwaway probe counting, per row, a dot or segment at column ≥ 8: before packing, 190 rows had no dot (the first at row 10; 89 of them had 8 or fewer active lanes) and 712 rows lost segments. After packing, 88 rows have no dot (the first at row 42; none has 8 or fewer active lanes) and 319 rows lose segments. `app-modules` went from 5 dotless rows and 59 rows losing segments to 3 and 46. The raw widths stay 32 and 12 lanes: those repos genuinely have that many concurrent lanes at some rows.
 - Visual differences from the mockup that remain, and why:
   - `fix/arrival-sort` and `release/2.9` share column 1 instead of columns 3 and 2, as spec §2 describes, so the graph is 2 lanes (28pt) wide and the text starts further left than in the mockup.
   - Lane colors after index 3 differ: the #418 branch is green and the #412 branch is pink (system pink reads red-ish), where the mockup uses purple and green. The palette rotates in spec order.
