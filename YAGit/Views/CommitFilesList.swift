@@ -48,7 +48,7 @@ struct CommitFilesList: View {
 
     private var selection: Binding<String?> {
         Binding(get: { store.selectedCommitFile }, set: {
-            store.focusedPane = .commitFiles
+            store.requestFocus(.commitFiles)
             store.selectedCommitFile = $0
         })
     }

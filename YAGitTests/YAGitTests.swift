@@ -210,6 +210,97 @@ struct RepositoryStoreTests {
         window.close()
     }
 
+    /// Space toggles the selected file and keeps it selected on its new side, so pressing Space
+    /// again moves it straight back.
+    @Test func toggleSelectedFileFollowsTheFileAcrossSides() async throws {
+        let fixture = try makeFixture()
+        let store = try RepositoryStore(url: fixture.url)
+        await store.load()
+        store.select(change: "unstaged:Sources/App/TripPlanner.swift")
+        try await settle()
+
+        store.toggleSelectedFile()
+        try await settle()
+        #expect(store.selectedChangeID == "staged:Sources/App/TripPlanner.swift")
+        #expect(store.staged.map(\.path) == ["Sources/App/TripPlanner.swift", "Sources/Models/Stop.swift"])
+
+        store.toggleSelectedFile()
+        try await settle()
+        #expect(store.selectedChangeID == "unstaged:Sources/App/TripPlanner.swift")
+        #expect(store.staged.map(\.path) == ["Sources/Models/Stop.swift"])
+    }
+
+    /// The menu item carries a bare Space key equivalent, so it must be disabled whenever text
+    /// is being typed, and come back when a click returns focus to the list.
+    @Test func toggleFileStageIsUnavailableWhileTyping() async throws {
+        let fixture = try makeFixture()
+        let store = try RepositoryStore(url: fixture.url)
+        await store.load()
+
+        let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 1100, height: 700),
+                              styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)
+        let hostingView = NSHostingView(rootView: RepositoryContent(store: store))
+        window.contentView = hostingView
+        window.makeKeyAndOrderFront(nil)
+        try await settle()
+        #expect(store.selectedChange != nil)
+        #expect(store.canToggleSelectedFile, "on open")
+
+        let editor = try #require(hostingView.descendants(of: NSTextView.self).first)
+        window.makeFirstResponder(editor)
+        try await settle()
+        #expect(store.canToggleSelectedFile == false, "typing a commit message")
+
+        // Clicking a row asks for the list back even though the store never left `.list`; that
+        // must actually take focus away from the editor.
+        store.requestFocus(.list)
+        try await settle()
+        #expect(store.canToggleSelectedFile, "clicked back into the list")
+        #expect(!(window.firstResponder is NSTextView), "editor resigned")
+
+        store.isPresentingNewBranch = true
+        #expect(store.canToggleSelectedFile == false, "new-branch sheet")
+        store.isPresentingNewBranch = false
+
+        store.mode = .history
+        try await settle()
+        #expect(store.canToggleSelectedFile == false, "history mode")
+        window.close()
+    }
+
+    /// A Space key event delivered to the window with the list focused stages the selected file.
+    @Test func spaceInTheListStagesTheSelectedFile() async throws {
+        let fixture = try makeFixture()
+        let store = try RepositoryStore(url: fixture.url)
+        await store.load()
+        store.select(change: "unstaged:Sources/App/TripPlanner.swift")
+
+        let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 1100, height: 700),
+                              styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)
+        window.contentView = NSHostingView(rootView: RepositoryContent(store: store))
+        window.makeKeyAndOrderFront(nil)
+        try await settle()
+        #expect(window.firstResponder is NSTableView)
+
+        let space = try #require(NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: [], timestamp: 0,
+                                                  windowNumber: window.windowNumber, context: nil,
+                                                  characters: " ", charactersIgnoringModifiers: " ",
+                                                  isARepeat: false, keyCode: 49))
+        window.sendEvent(space)
+        try await settle()
+        #expect(store.selectedChangeID == "staged:Sources/App/TripPlanner.swift")
+        #expect(store.staged.map(\.path).contains("Sources/App/TripPlanner.swift"))
+        window.close()
+    }
+
+    /// The shortcut is discoverable: a Changes menu item bound to a bare Space.
+    @Test func changesMenuOffersToggleFileStageOnSpace() throws {
+        let menu = try #require(NSApp.mainMenu?.items.first { $0.title == "Changes" }?.submenu)
+        let item = try #require(menu.items.first { ["Stage File", "Unstage File"].contains($0.title) })
+        #expect(item.keyEquivalent == " ")
+        #expect(item.keyEquivalentModifierMask.isEmpty)
+    }
+
     /// A clean working tree shows only the empty state, not two empty section headers.
     @Test func cleanTreeScreenshot() async throws {
         let fixture = try TestRepository()

@@ -42,7 +42,7 @@ struct HistoryList: View {
 
     private var selection: Binding<String?> {
         Binding(get: { store.selectedCommitSHA }, set: {
-            store.focusedPane = .list
+            store.requestFocus(.list)
             store.selectCommit(sha: $0)
         })
     }

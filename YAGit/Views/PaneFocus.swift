@@ -18,6 +18,6 @@ extension View {
     /// unfocused list does not change the selection, so nothing would fire. A simultaneous gesture
     /// runs alongside the list's own selection handling rather than swallowing it.
     func claimsPaneFocus(_ store: RepositoryStore, _ pane: RepositoryStore.Pane) -> some View {
-        simultaneousGesture(TapGesture().onEnded { store.focusedPane = pane })
+        simultaneousGesture(TapGesture().onEnded { store.requestFocus(pane) })
     }
 }

@@ -51,6 +51,9 @@ struct RepositoryContent: View {
         .onChange(of: store.focusedPane) { _, pane in
             if focusedPane != pane { focusedPane = pane }
         }
+        .onChange(of: store.focusRequestCount) {
+            focusedPane = store.focusedPane
+        }
         .onChange(of: focusedPane) { _, pane in
             if let pane, store.focusedPane != pane { store.focusedPane = pane }
         }

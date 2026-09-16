@@ -22,7 +22,7 @@ struct SidebarView: View {
                     BranchRow(branch: branch)
                         .contentShape(Rectangle())
                         .onTapGesture {
-                            store.focusedPane = .sidebar
+                            store.requestFocus(.sidebar)
                             store.switchBranch(named: branch.name)
                         }
                         .selectionDisabled()
@@ -48,7 +48,7 @@ struct SidebarView: View {
             set: {
                 guard let mode = $0 else { return }
                 store.mode = mode
-                store.focusedPane = .sidebar
+                store.requestFocus(.sidebar)
             }
         )
     }

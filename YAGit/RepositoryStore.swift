@@ -26,6 +26,12 @@ final class RepositoryStore {
     var snapshot: RepositorySnapshot?
     var mode: Mode = .changes
     var focusedPane: Pane = .list
+    /// Whether the commit message editor has keyboard focus; `CommitBox` keeps this current.
+    /// `focusedPane` can't answer this — it stays on `.list` while the message is being typed.
+    var isEditingCommitMessage = false
+    /// Bumped by `requestFocus` so a click can reclaim focus even when `focusedPane` is unchanged,
+    /// as after typing a commit message: the pane never left `.list`, but the focus did.
+    private(set) var focusRequestCount = 0
 
     // Changes mode
     var selectedChangeID: ChangedFile.ID?
@@ -68,6 +74,13 @@ final class RepositoryStore {
 
     var canCommit: Bool {
         hasStagedChanges && !commitMessage.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty
+    }
+
+    /// Gates the Changes ▸ Stage/Unstage File menu item. Its key equivalent is a bare Space, which
+    /// AppKit hands to an enabled menu item before any text view sees it, so the item must be off
+    /// whenever text is being typed. Any new text input must report its focus here too.
+    var canToggleSelectedFile: Bool {
+        mode == .changes && selectedChange != nil && !isEditingCommitMessage && !isPresentingNewBranch
     }
 
     var selectedCommit: CommitSummary? { history.first { $0.sha == selectedCommitSHA } }
@@ -128,6 +141,14 @@ final class RepositoryStore {
         selectedChangeID = unstaged.first?.id ?? staged.first?.id
     }
 
+    // MARK: - Focus
+
+    /// Moves keyboard focus to `pane`, re-asserting it even if the store already points there.
+    func requestFocus(_ pane: Pane) {
+        focusedPane = pane
+        focusRequestCount += 1
+    }
+
     // MARK: - Changes intents
 
     func select(change id: ChangedFile.ID?) {
@@ -136,9 +157,10 @@ final class RepositoryStore {
     }
 
     /// Row checkbox: stage or unstage every hunk of that file on that side.
-    func toggle(file: ChangedFile) {
+    func toggle(file: ChangedFile, then completion: (() -> Void)? = nil) {
         run(file.side == .unstaged ? "stage \(file.fileName)" : "unstage \(file.fileName)",
-            success: file.side == .unstaged ? "Staged \(file.path)" : "Unstaged \(file.path)") {
+            success: file.side == .unstaged ? "Staged \(file.path)" : "Unstaged \(file.path)",
+            then: completion) {
             switch file.side {
             case .unstaged: try await self.repository.stage(path: file.path)
             case .staged: try await self.repository.unstage(path: file.path)
@@ -160,9 +182,17 @@ final class RepositoryStore {
         }
     }
 
+    /// Stage/Unstage File: like the row checkbox, but the selection follows the file to its new
+    /// side so pressing Space again moves it straight back.
     func toggleSelectedFile() {
         guard let change = selectedChange else { return }
-        toggle(file: change)
+        let destination = ChangedFile(path: change.path, status: change.status,
+                                      side: change.side == .unstaged ? .staged : .unstaged).id
+        toggle(file: change) {
+            if (self.staged + self.unstaged).contains(where: { $0.id == destination }) {
+                self.select(change: destination)
+            }
+        }
     }
 
     func stageHunk(_ hunk: DiffHunk) {
@@ -274,12 +304,14 @@ final class RepositoryStore {
 
     // MARK: - Helpers
 
-    private func run(_ verb: String, success: String, _ operation: @escaping () async throws -> Void) {
+    private func run(_ verb: String, success: String, then completion: (() -> Void)? = nil,
+                     _ operation: @escaping () async throws -> Void) {
         Task {
             do {
                 try await operation()
                 await refresh()
                 statusText = success
+                completion?()
             } catch {
                 report("Couldn't \(verb)", error)
                 await refresh()

@@ -41,6 +41,14 @@ struct ChangesList: View {
                 .scrollContentBackground(.hidden)
                 .paneFocus(focus, .list)
                 .claimsPaneFocus(store, .list)
+                // The Changes menu carries the same bare Space, but AppKit offers key equivalents
+                // to the focused view before the menu and the list swallows Space, so handle it
+                // here as well. Both paths run the same intent.
+                .onKeyPress(.space) {
+                    guard store.canToggleSelectedFile else { return .ignored }
+                    store.toggleSelectedFile()
+                    return .handled
+                }
             }
             Divider()
             CommitBox(store: store)
@@ -50,7 +58,7 @@ struct ChangesList: View {
 
     private var selection: Binding<ChangedFile.ID?> {
         Binding(get: { store.selectedChangeID }, set: {
-            store.focusedPane = .list
+            store.requestFocus(.list)
             store.select(change: $0)
         })
     }

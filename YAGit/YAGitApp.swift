@@ -1,4 +1,5 @@
 import AppKit
+import GitCore
 import SwiftUI
 
 @main
@@ -85,6 +86,15 @@ struct RepositoryCommands: Commands {
     @FocusedValue(\.repositoryStore) private var store
 
     var body: some Commands {
+        CommandMenu("Changes") {
+            // A bare Space, like Quick Look in Finder. `canToggleSelectedFile` keeps the item
+            // disabled while text is being typed, so a space still types a space.
+            Button(store?.selectedChange?.side == .staged ? "Unstage File" : "Stage File") {
+                store?.toggleSelectedFile()
+            }
+            .keyboardShortcut(.space, modifiers: [])
+            .disabled(store?.canToggleSelectedFile != true)
+        }
         CommandMenu("Repository") {
             Button("Fetch") { store?.fetch() }
                 .keyboardShortcut("r", modifiers: [.command, .shift])

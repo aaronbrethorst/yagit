@@ -29,6 +29,9 @@ struct CommitBox: View {
                 .background(.background, in: RoundedRectangle(cornerRadius: 6))
                 .overlay(RoundedRectangle(cornerRadius: 6).strokeBorder(.quaternary))
                 .focused($isEditing)
+                .onChange(of: isEditing, initial: true) { _, editing in
+                    store.isEditingCommitMessage = editing
+                }
             HStack(spacing: 8) {
                 Button { store.clearMessage() } label: {
                     Text("Cancel").frame(maxWidth: .infinity)
