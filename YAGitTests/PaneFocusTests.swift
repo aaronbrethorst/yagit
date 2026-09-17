@@ -92,7 +92,49 @@ struct PaneFocusTests {
         window.close()
     }
 
+    /// AppKit's automatic key view loop puts the sidebar *after* the list, so Tab from History
+    /// landed in the sidebar instead of the files. The loop must run left to right and wrap.
+    @Test func tabCyclesTheHistoryPanesLeftToRight() async throws {
+        let store = try await makeStore()
+        let window = makeWindow(store)
+        try await settle(window)
+        store.mode = .history
+        try await settle(window)
+        store.selectCommit(sha: store.history[0].commit.sha)
+        try await settle(window)
+        store.requestFocus(.sidebar)
+        try await settle(window)
+        #expect(focusedTableWidth(window) == sidebarWidth)
+
+        for (pane, width) in [(RepositoryStore.Pane.list, changesListWidth), (.commitFiles, commitFilesWidth),
+                              (.sidebar, sidebarWidth)] {
+            pressTab(in: window)
+            try await settle(window)
+            #expect(store.focusedPane == pane)
+            #expect(focusedTableWidth(window) == width)
+        }
+        for (pane, width) in [(RepositoryStore.Pane.commitFiles, commitFilesWidth), (.list, changesListWidth),
+                              (.sidebar, sidebarWidth)] {
+            pressTab(in: window, shift: true)
+            try await settle(window)
+            #expect(store.focusedPane == pane)
+            #expect(focusedTableWidth(window) == width)
+        }
+
+        window.close()
+    }
+
     // MARK: - Helpers
+
+    private func pressTab(in window: NSWindow, shift: Bool = false) {
+        // Shift-Tab reaches the responder chain as a back-tab (U+0019), as it does from a keyboard.
+        let characters = shift ? "\u{19}" : "\t"
+        let event = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: shift ? [.shift] : [],
+                                     timestamp: 0, windowNumber: window.windowNumber, context: nil,
+                                     characters: characters, charactersIgnoringModifiers: characters,
+                                     isARepeat: false, keyCode: 48)!
+        window.sendEvent(event)
+    }
 
     private func makeStore(loaded: Bool = true) async throws -> RepositoryStore {
         let fixture = try TestRepository()

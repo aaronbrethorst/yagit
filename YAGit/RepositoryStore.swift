@@ -170,6 +170,25 @@ final class RepositoryStore {
         focusRequestCount += 1
     }
 
+    /// The panes the Tab key visits, left to right, when the store orders the loop itself.
+    ///
+    /// AppKit's automatic key view loop puts the sidebar *after* the list column, so in History
+    /// mode Tab jumped from the history list back into the sidebar. In Changes mode the commit
+    /// message editor is part of the loop and isn't a pane, so AppKit keeps that one.
+    var tabOrder: [Pane]? {
+        mode == .history ? [.sidebar, .list, .commitFiles] : nil
+    }
+
+    /// Moves focus to the next (or previous) pane in `tabOrder`, wrapping at either end.
+    /// Returns false when AppKit should handle the key instead.
+    @discardableResult
+    func focusAdjacentPane(reverse: Bool) -> Bool {
+        guard let order = tabOrder, let index = order.firstIndex(of: focusedPane) else { return false }
+        let step = reverse ? order.count - 1 : 1
+        requestFocus(order[(index + step) % order.count])
+        return true
+    }
+
     // MARK: - Changes intents
 
     func select(change id: ChangedFile.ID?) {

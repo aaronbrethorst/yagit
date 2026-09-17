@@ -7,12 +7,14 @@ struct CommitRow: View {
     let laneCount: Int
 
     private static let visibleBadgeLimit = 3
+    /// Gap between the graph and the text.
+    static let graphSpacing: CGFloat = 8
 
     var body: some View {
         let commit = entry.commit
         let laneColor = GraphPalette.color(for: entry.graph.colorIndex)
         let hidden = entry.refs.dropFirst(Self.visibleBadgeLimit)
-        HStack(spacing: 8) {
+        HStack(spacing: Self.graphSpacing) {
             GraphColumn(row: entry.graph, laneCount: laneCount)
             VStack(alignment: .leading, spacing: 2) {
                 HStack(spacing: 4) {
@@ -30,12 +32,12 @@ struct CommitRow: View {
                         .font(.system(size: 13, weight: .medium))
                         .lineLimit(1)
                 }
-                // The date outranks the author, so a long name truncates before the time does.
-                HStack(spacing: 0) {
-                    Text("\(commit.shortSHA) · ")
-                    Text(commit.authorName)
-                    Text(" · \(CommitDate.string(for: commit.date))")
-                        .layoutPriority(1)
+                // One run of text, so nothing squishes: a narrow row drops the author, then the SHA,
+                // and keeps the date whole.
+                ViewThatFits(in: .horizontal) {
+                    Self.byline(for: commit, showsSHA: true, showsAuthor: true)
+                    Self.byline(for: commit, showsSHA: true, showsAuthor: false)
+                    Self.byline(for: commit, showsSHA: false, showsAuthor: false)
                 }
                 .font(.system(size: 11))
                 .foregroundStyle(.secondary)
@@ -46,6 +48,16 @@ struct CommitRow: View {
         .frame(height: 34)
         .accessibilityElement(children: .ignore)
         .accessibilityLabel(Self.accessibilityLabel(for: entry))
+    }
+
+    /// "cfa7deb · Aaron Brethorst · Today at 8:14 AM", with the SHA in monospace and any part dropped
+    /// when its flag is off.
+    static func byline(for commit: CommitSummary, showsSHA: Bool, showsAuthor: Bool) -> Text {
+        var parts: [Text] = []
+        if showsSHA { parts.append(Text(commit.shortSHA).monospaced()) }
+        if showsAuthor { parts.append(Text(commit.authorName)) }
+        parts.append(Text(CommitDate.string(for: commit.date)))
+        return parts.dropFirst().reduce(parts[0]) { $0 + Text(" · ") + $1 }
     }
 
     /// "summary, merge commit, on main, origin/main, author, date", naming every ref, including those hidden behind "+N".

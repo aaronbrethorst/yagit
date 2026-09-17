@@ -5,15 +5,19 @@ import SwiftUI
 struct HistoryList: View {
     @Bindable var store: RepositoryStore
     var focus: FocusState<RepositoryStore.Pane?>.Binding
+    @State private var width: CGFloat = 0
 
     var body: some View {
+        // A narrow column gives up outer lanes rather than the summary; every row uses the same count.
+        let laneCount = GraphColumn.laneCount(fitting: width, of: store.graphLaneCount)
         List(selection: selection) {
             Section {
                 ForEach(store.history) { entry in
-                    CommitRow(entry: entry, laneCount: store.graphLaneCount)
+                    CommitRow(entry: entry, laneCount: laneCount)
                         .tag(entry.commit.sha)
                         // Zero vertical insets put rows exactly edge to edge, so lanes meet between rows.
-                        .listRowInsets(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8))
+                        // The table already keeps 8pt leading and 9pt trailing; more only starves the summary.
+                        .listRowInsets(EdgeInsets())
                         .listRowSeparator(.hidden)
                 }
             } header: {
@@ -30,8 +34,9 @@ struct HistoryList: View {
                 .padding(.vertical, 2)
             }
         }
-        .listStyle(.inset)
+        .listStyle(.plain)
         .scrollContentBackground(.hidden)
+        .onGeometryChange(for: CGFloat.self) { $0.size.width } action: { width = $0 }
         .overlay {
             if store.history.isEmpty {
                 ContentUnavailableView("No commits yet", systemImage: "clock",
