@@ -102,6 +102,8 @@ struct RepositoryCommands: Commands {
             Button("New Branch…") { store?.isPresentingNewBranch = true }
                 .keyboardShortcut("n", modifiers: [.command, .shift])
                 .disabled(store == nil)
+            Button("Make Branch Active") { store?.makeSelectedBranchActive() }
+                .disabled(store?.canMakeBranchActive != true)
             Divider()
             Button("Commit") { store?.commit() }
                 .keyboardShortcut(.return, modifiers: .command)

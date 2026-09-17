@@ -36,7 +36,8 @@ Think of it as SourceTree with a rabid, macOS-only focus.
 - Stage and unstage by whole file or by individual hunk.
 - Commit box with author, message, and ⌘↩ to commit.
 - History view for the current branch, with per-commit file lists and read-only diffs.
-- Create and switch branches, and fetch from `origin`.
+- Create branches, make another branch active (from its context menu, the Repository menu, or the
+  toolbar pop-up), and fetch from `origin`.
 
 ## What it intentionally leaves out (for now)
 

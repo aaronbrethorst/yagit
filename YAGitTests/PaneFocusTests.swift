@@ -128,7 +128,6 @@ struct PaneFocusTests {
         for _ in 0..<8 {
             if !window.isKeyWindow { window.makeKeyAndOrderFront(nil) }
             try await Task.sleep(for: .milliseconds(120))
-            RunLoop.main.run(until: Date().addingTimeInterval(0.05))
         }
     }
 }
