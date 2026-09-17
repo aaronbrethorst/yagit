@@ -12,6 +12,17 @@ struct GraphColumn: View {
 
     static func width(laneCount: Int) -> CGFloat { 8 + laneSpacing * CGFloat(laneCount) }
 
+    /// Width the row keeps for its text before the graph may grow beyond two lanes.
+    static let minimumTextWidth: CGFloat = 150
+
+    /// How many of `available` lanes a row `rowWidth` wide can draw without starving its text.
+    /// A width that isn't known yet (zero) draws every available lane.
+    static func laneCount(fitting rowWidth: CGFloat, of available: Int) -> Int {
+        guard rowWidth > 0, available > 2 else { return available }
+        let spare = rowWidth - minimumTextWidth - CommitRow.graphSpacing - width(laneCount: 0)
+        return min(available, max(2, Int(spare / laneSpacing)))
+    }
+
     var body: some View {
         let selected = prominence == .increased
         let row = self.row

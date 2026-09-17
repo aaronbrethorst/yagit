@@ -141,6 +141,22 @@ struct HistoryGraphRenderTests {
         window.close()
     }
 
+    /// The History column as narrow as the split view squeezes it at the window's minimum width.
+    @Test func narrowColumnRendersForInspection() async throws {
+        let fixture = try makeMockupFixture()
+        let store = try RepositoryStore(url: fixture.url)
+        await store.load()
+        store.mode = .history
+        let window = NSWindow(contentRect: NSRect(x: 0, y: 0, width: 231, height: 600),
+                              styleMask: [.titled, .closable, .resizable], backing: .buffered, defer: false)
+        window.appearance = NSAppearance(named: .aqua)
+        window.contentView = NSHostingView(rootView: HistoryListHost(store: store))
+        window.makeKeyAndOrderFront(nil)
+        try await settle(window)
+        _ = try snapshot(window, named: "history-graph-narrow")
+        window.close()
+    }
+
     // MARK: - Helpers
 
     private func makeWindow(_ store: RepositoryStore, dark: Bool) -> NSWindow {
@@ -194,6 +210,16 @@ struct HistoryGraphRenderTests {
     private func isLaneInk(_ color: NSColor?) -> Bool {
         guard let color = color?.usingColorSpace(.sRGB) else { return false }
         return color.saturationComponent > 0.35 && color.brightnessComponent > 0.3
+    }
+}
+
+/// Hosts the History list on its own, with the focus binding it needs.
+private struct HistoryListHost: View {
+    let store: RepositoryStore
+    @FocusState private var pane: RepositoryStore.Pane?
+
+    var body: some View {
+        HistoryList(store: store, focus: $pane)
     }
 }
 

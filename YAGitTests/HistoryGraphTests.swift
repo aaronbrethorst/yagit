@@ -88,6 +88,18 @@ struct GraphPaletteTests {
         #expect(GraphColumn.width(laneCount: 1) == 18)
         #expect(GraphColumn.width(laneCount: 8) == 88)
     }
+
+    @Test func laneCountGivesUpOuterLanesBeforeTheText() {
+        // Unknown width, or nothing to give up: every lane.
+        #expect(GraphColumn.laneCount(fitting: 0, of: 8) == 8)
+        #expect(GraphColumn.laneCount(fitting: 100, of: 2) == 2)
+        // 326 - 150 - 8 - 8 = 160pt spare → 16 lanes, capped by what the history needs.
+        #expect(GraphColumn.laneCount(fitting: 326, of: 8) == 8)
+        // 231 - 166 = 65pt spare → 6 lanes.
+        #expect(GraphColumn.laneCount(fitting: 231, of: 8) == 6)
+        // Never fewer than two, so branching stays visible.
+        #expect(GraphColumn.laneCount(fitting: 150, of: 8) == 2)
+    }
 }
 
 @MainActor

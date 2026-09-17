@@ -172,10 +172,17 @@ equal timestamps can come out in either order. Tests that depend on order pin co
 - Header: "History" left; right (11pt, tertiary): "All branches · N", or "All branches · N+" when
   `isHistoryTruncated`.
 - Empty state description: "Commits on any branch will appear here."
-- Rows: `.listRowInsets(EdgeInsets(top: 0, leading: 8, bottom: 0, trailing: 8))` and
-  `.listRowSeparator(.hidden)`. With zero vertical insets an `.inset` List lays rows out exactly
-  34pt apart with no intercell spacing, so row canvases meet edge to edge (confirmed by probe).
-  Don't use `listRowSpacing`; it isn't available on macOS.
+- Rows: `.listRowInsets(EdgeInsets())` and `.listRowSeparator(.hidden)`. With zero vertical
+  insets the List lays rows out exactly 34pt apart with no intercell spacing, so row canvases
+  meet edge to edge (confirmed by probe). Don't use `listRowSpacing`; it isn't available on macOS.
+- `.listStyle(.plain)`, not `.inset`: the plain table keeps 8pt leading and 9pt trailing at the
+  table level, where the inset style spent about 14pt and 27pt, and the History column is the
+  narrowest pane at the window's minimum width. Selection is a full-width band, which the lanes
+  run straight through.
+- Lane cap by width: rows draw `GraphColumn.laneCount(fitting: width, of: store.graphLaneCount)`
+  lanes, where `width` is the list's width from `onGeometryChange`. The graph only grows past
+  two lanes with 150pt left for the text, so a squeezed column gives up outer lanes (which the
+  canvas already skips) instead of the summary.
 
 ### `CommitRow` (34pt tall)
 
@@ -189,7 +196,9 @@ equal timestamps can come out in either order. Tests that depend on order pin co
   the summary keeps default priority, so it shrinks first and a badge only truncates when the
   row can't fit it at all. More than 3 refs → a fourth neutral badge `+N` with `.help` listing
   the hidden names.
-- Line 2: `shortSHA · authorName · CommitDate.string(for: date)` (11pt, `.secondary`, one line).
+- Line 2: `shortSHA · authorName · CommitDate.string(for: date)` (11pt, `.secondary`, one line,
+  SHA in monospace) as one `Text`, chosen by `ViewThatFits`: the full byline, else SHA and
+  date, else the date alone. Nothing squishes; a narrow row drops the author, then the SHA.
   Full author name, not a derived first name. `.secondary` adapts to selection on its own.
 - Accessibility: `.accessibilityElement(children: .ignore)` with `.accessibilityLabel`
   "summary, merge commit (when isMerge), on <every ref name, including hidden ones>, author,
