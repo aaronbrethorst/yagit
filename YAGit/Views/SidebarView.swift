@@ -1,31 +1,41 @@
 import GitCore
 import SwiftUI
 
-/// Workspace / Branches / Remotes. Workspace rows drive the list column; branch rows check out.
+/// Workspace / Branches / Remotes. Workspace rows drive the list column. Branch rows only select;
+/// checking out is an explicit "Make Branch Active" from the row's context menu or the Repository
+/// menu, so a stray click can't change what's on disk.
 struct SidebarView: View {
     @Bindable var store: RepositoryStore
     var focus: FocusState<RepositoryStore.Pane?>.Binding
 
+    /// One selectable thing in the sidebar. Remote rows aren't selectable.
+    enum Item: Hashable {
+        case mode(RepositoryStore.Mode)
+        case branch(String)
+    }
+
     var body: some View {
-        List(selection: modeSelection) {
+        List(selection: selection) {
             Section("Workspace") {
                 Label("Changes", systemImage: "pencil.line")
                     .badge(store.changedFileCount)
-                    .tag(RepositoryStore.Mode.changes)
+                    .tag(Item.mode(.changes))
                     .frame(height: 24)
                 Label("History", systemImage: "clock")
-                    .tag(RepositoryStore.Mode.history)
+                    .tag(Item.mode(.history))
                     .frame(height: 24)
             }
             Section("Branches") {
                 ForEach(store.branches) { branch in
                     BranchRow(branch: branch)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            store.requestFocus(.sidebar)
-                            store.switchBranch(named: branch.name)
+                        .tag(Item.branch(branch.name))
+                        .contextMenu {
+                            Button("Make Branch Active") {
+                                store.selectedBranchName = branch.name
+                                store.makeSelectedBranchActive()
+                            }
+                            .disabled(branch.isCurrent)
                         }
-                        .selectionDisabled()
                 }
             }
             Section("Remotes") {
@@ -42,12 +52,21 @@ struct SidebarView: View {
         .claimsPaneFocus(store, .sidebar)
     }
 
-    private var modeSelection: Binding<RepositoryStore.Mode?> {
+    /// A branch selection leaves `store.mode` alone so the content column keeps showing what it
+    /// was; a mode selection clears the branch highlight.
+    private var selection: Binding<Item?> {
         Binding(
-            get: { store.mode },
+            get: { store.selectedBranchName.map(Item.branch) ?? .mode(store.mode) },
             set: {
-                guard let mode = $0 else { return }
-                store.mode = mode
+                switch $0 {
+                case .mode(let mode):
+                    store.mode = mode
+                    store.selectedBranchName = nil
+                case .branch(let name):
+                    store.selectedBranchName = name
+                case nil:
+                    return
+                }
                 store.requestFocus(.sidebar)
             }
         )
@@ -72,6 +91,6 @@ private struct BranchRow: View {
                 ? RoundedRectangle(cornerRadius: 6).fill(Color.accentColor.opacity(0.15))
                 : nil
         )
-        .help(branch.isCurrent ? "Current branch" : "Check out \(branch.name)")
+        .help(branch.isCurrent ? "Current branch" : "Control-click to make \(branch.name) active")
     }
 }

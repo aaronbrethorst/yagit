@@ -117,15 +117,19 @@ Selection fallback after commit: first unstaged file, else first staged file, el
 - `WindowGroup(for: URL.self)` — one window per repository. App launch opens the last
   repository from `UserDefaults` (plain path, no sandbox bookmark needed); if none or it fails
   to open, `File ▸ Open Repository…` (⌘O) shows an `NSOpenPanel` limited to directories.
-- Commands: Open Repository… ⌘O, Fetch ⇧⌘R, New Branch… ⇧⌘N, Commit ⌘↩ (via the commit box's
-  default action).
+- Commands: Open Repository… ⌘O, Fetch ⇧⌘R, New Branch… ⇧⌘N, Make Branch Active (no shortcut),
+  Commit ⌘↩ (via the commit box's default action).
+- Branch checkout is always explicit. Clicking a sidebar branch only selects it
+  (`selectedBranchName`); "Make Branch Active" in the row's context menu or the Repository menu
+  performs the checkout, so a stray click can't change the working tree. The toolbar branch pop-up
+  is the one-click path. Remote rows are inert.
 
 ### Views
 
 | View | Responsibility |
 | --- | --- |
 | `RepositoryWindow` | `NavigationSplitView` (sidebar 212 / content 326 / detail flexible), toolbar, bottom `StatusBar` via `safeAreaInset`, new-branch sheet. |
-| `SidebarView` | Workspace / Branches / Remotes sections, 32pt rows, badges. |
+| `SidebarView` | Workspace / Branches / Remotes sections, 32pt rows, badges. Selection is a `SidebarView.Item` (mode or branch); branch rows carry a "Make Branch Active" context menu. |
 | `ChangesList` | Staged + Unstaged sections with header checkboxes and counts, 42pt rows, `CommitBox` pinned at the bottom. |
 | `CommitBox` | Author line, `Description` label, 4-row `TextEditor`, Cancel / Commit. |
 | `HistoryList` | 44pt commit rows, header `n commits`. |

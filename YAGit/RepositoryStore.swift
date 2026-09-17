@@ -49,6 +49,11 @@ final class RepositoryStore {
     var commitDetail: CommitDetail?
     var selectedCommitFile: String?
 
+    // Branches
+    /// The highlighted sidebar branch. Selecting a branch never checks it out; that takes an
+    /// explicit "Make Branch Active" from the context menu or the Repository menu.
+    var selectedBranchName: String?
+
     // Chrome
     var statusText = ""
     var isFetching = false
@@ -90,6 +95,12 @@ final class RepositoryStore {
 
     var selectedCommit: CommitSummary? { history.first { $0.commit.sha == selectedCommitSHA }?.commit }
 
+    /// Gates Repository ▸ Make Branch Active: a sidebar branch is selected and it isn't current.
+    var canMakeBranchActive: Bool {
+        guard let name = selectedBranchName else { return false }
+        return name != currentBranch && branches.contains { $0.name == name }
+    }
+
     var selectedCommitDiff: FileDiff? {
         commitDetail?.files.first { $0.path == selectedCommitFile }
     }
@@ -118,6 +129,9 @@ final class RepositoryStore {
             return
         }
         if selectedChange == nil { selectFallbackChange() }
+        if let name = selectedBranchName, !branches.contains(where: { $0.name == name }) {
+            selectedBranchName = nil
+        }
         await reloadDiff()
     }
 
@@ -271,6 +285,13 @@ final class RepositoryStore {
     }
 
     // MARK: - Branch intents
+
+    /// Make Branch Active: checks out the selected sidebar branch. The selection stays put, so the
+    /// row the user acted on is now shown as current.
+    func makeSelectedBranchActive() {
+        guard canMakeBranchActive, let name = selectedBranchName else { return }
+        switchBranch(named: name)
+    }
 
     func switchBranch(named name: String) {
         guard name != currentBranch else { return }

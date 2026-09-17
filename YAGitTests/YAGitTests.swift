@@ -118,6 +118,56 @@ struct RepositoryStoreTests {
         #expect(store.statusText == "Fetched origin — already up to date")
     }
 
+    @Test func selectingABranchOnlyHighlightsIt() async throws {
+        let fixture = try makeFixture()
+        let store = try RepositoryStore(url: fixture.url)
+        await store.load()
+
+        store.selectedBranchName = "main"
+        try await settle()
+        #expect(store.currentBranch == "feature/trip-planner")
+        #expect(try fixture.git("branch", "--show-current").trimmingCharacters(in: .whitespacesAndNewlines)
+            == "feature/trip-planner")
+    }
+
+    @Test func canMakeBranchActiveNeedsASelectedNonCurrentBranch() async throws {
+        let fixture = try makeFixture()
+        let store = try RepositoryStore(url: fixture.url)
+        await store.load()
+
+        #expect(store.canMakeBranchActive == false)
+        store.selectedBranchName = "feature/trip-planner"
+        #expect(store.canMakeBranchActive == false)
+        store.selectedBranchName = "main"
+        #expect(store.canMakeBranchActive)
+    }
+
+    @Test func makeSelectedBranchActiveSwitchesAndKeepsTheSelection() async throws {
+        let fixture = try makeFixture()
+        let store = try RepositoryStore(url: fixture.url)
+        await store.load()
+
+        store.selectedBranchName = "main"
+        store.makeSelectedBranchActive()
+        try await settle()
+        #expect(store.currentBranch == "main")
+        #expect(store.selectedBranchName == "main")
+        #expect(store.canMakeBranchActive == false)
+        #expect(store.statusText == "Switched to branch ‘main’")
+    }
+
+    @Test func branchSelectionClearsWhenTheBranchDisappears() async throws {
+        let fixture = try makeFixture()
+        try fixture.git("branch", "spike")
+        let store = try RepositoryStore(url: fixture.url)
+        await store.load()
+
+        store.selectedBranchName = "spike"
+        try fixture.git("branch", "-D", "spike")
+        await store.refresh()
+        #expect(store.selectedBranchName == nil)
+    }
+
     @Test func commitSelectionSurvivesABranchSwitchAndClearsWhenItsCommitDisappears() async throws {
         let fixture = try makeFixture()
         let spike = try fixture.git("commit-tree", "HEAD^{tree}", "-p", "HEAD", "-m", "Spike")
