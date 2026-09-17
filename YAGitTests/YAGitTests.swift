@@ -409,7 +409,6 @@ struct RepositoryStoreTests {
     private func settle() async throws {
         for _ in 0..<6 {
             try await Task.sleep(for: .milliseconds(120))
-            RunLoop.main.run(until: Date().addingTimeInterval(0.05))
         }
     }
 
